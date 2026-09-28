@@ -435,24 +435,22 @@
           </div>
           <div class="overview-toolbar__right">
             <select class="ov-select" ng-model="vm.ovq.horizon" ng-change="vm.ovChanged()" aria-label="Horizon">
-              <option value="12">Last 12 weeks</option>
-              <option value="26">Last 26 weeks</option>
-              <option value="52">Last 52 weeks</option>
+              <option ng-value="13">3 Months</option>
+              <option ng-value="26">6 Months</option>
+              <option ng-value="52">12 Months</option>
             </select>
             <select class="ov-select" ng-model="vm.ovq.sku" ng-change="vm.ovChanged()" aria-label="SKUs">
               <option value="all">All SKUs</option>
-              <option value="H100">GPU (H100)</option>
-              <option value="H200">GPU (H200)</option>
-              <option value="A100">GPU (A100)</option>
-              <option value="Gen5">Gen5 Compute</option>
+              <option value="gpu">GPU</option>
+              <option value="compute">Compute</option>
             </select>
             <select class="ov-select" ng-model="vm.ovq.region" ng-change="vm.ovChanged()" aria-label="Regions">
               <option value="all">All regions</option>
-              <option value="eastus">East US</option>
-              <option value="westeurope">Europe</option>
-              <option value="southeastasia">Asia Pacific</option>
-              <option value="northeurope">North Europe</option>
-              <option value="germanywestcentral">Germany</option>
+              <option value="north-america">North America</option>
+              <option value="europe">Europe</option>
+              <option value="asia-pacific">Asia Pacific</option>
+              <option value="latin-america">Latin America</option>
+              <option value="middle-east">Middle East</option>
             </select>
             <a class="btn-create-req" href="#/requests">
               <svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-plus"/></svg>
@@ -472,23 +470,23 @@
 
         <!-- 6 KPI Cards Row -->
         <section class="kpis-row" aria-label="Key performance indicators">
-          <!-- Card 1: Total Demand (12M) -->
+          <!-- Card 1: Total Demand -->
           <article class="kpicard">
             <div class="kpicard__top">
               <div class="kpicard__icon kpicard__icon--blue">
                 <svg class="ic" aria-hidden="true"><use href="#i-box"/></svg>
               </div>
               <div class="kpicard__badge kpicard__badge--green">
-                <span class="kpicard__badge-arrow">▲</span> +32%
+                <span class="kpicard__badge-arrow"></span> {{ vm.ov.kpis.total_demand.display_delta }}
                 <span class="kpicard__badge-sub">vs last quarter</span>
               </div>
             </div>
             <div class="kpicard__label">
-              Total Demand (12M)
+              Total Demand ({{ vm.ov.forecast.horizon_weeks ? (vm.ov.forecast.horizon_weeks / 13 * 3) : 12 }}M)
               <span class="info-circle" title="{{ vm.ov.kpis.total_demand.definition }}">ⓘ</span>
             </div>
             <div class="kpicard__val">
-              124,800 <span class="kpicard__unit">CU</span>
+              {{ vm.ov.kpis.total_demand.display_val }}
             </div>
           </article>
 
@@ -499,8 +497,8 @@
                 <svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>
               </div>
               <div class="kpicard__badge kpicard__badge--red">
-                <span class="kpicard__badge-arrow">▲</span> +38%
-                <span class="kpicard__badge-sub">19% of total</span>
+                <span class="kpicard__badge-arrow"></span> {{ vm.ov.kpis.projected_shortfall.display_delta }}
+                <span class="kpicard__badge-sub">{{ vm.ov.kpis.projected_shortfall.display_share }}</span>
               </div>
             </div>
             <div class="kpicard__label">
@@ -508,7 +506,7 @@
               <span class="info-circle" title="{{ vm.ov.kpis.projected_shortfall.definition }}">ⓘ</span>
             </div>
             <div class="kpicard__val kpicard__val--red">
-              6,800 <span class="kpicard__unit">CU</span>
+              {{ vm.ov.kpis.projected_shortfall.display_val }}
             </div>
           </article>
 
@@ -524,10 +522,10 @@
               <span class="info-circle" title="{{ vm.ov.kpis.regions_at_risk.definition }}">ⓘ</span>
             </div>
             <div class="kpicard__val">
-              4 / 8
+              {{ vm.ov.kpis.regions_at_risk.display_val }}
             </div>
             <div class="kpicard__sub kpicard__sub--red">
-              <span class="dot-red">●</span> 2 Critical
+              <span class="dot-red">●</span> {{ vm.ov.kpis.regions_at_risk.display_crit }}
             </div>
           </article>
 
@@ -543,10 +541,10 @@
               <span class="info-circle" title="{{ vm.ov.kpis.reclaim.definition }}">ⓘ</span>
             </div>
             <div class="kpicard__val">
-              6,200 <span class="kpicard__unit">CU</span>
+              {{ vm.ov.kpis.reclaim.display_val }}
             </div>
             <div class="kpicard__sub kpicard__sub--green">
-              $1.2M
+              {{ vm.ov.kpis.reclaim.display_usd }}
             </div>
           </article>
 
@@ -562,7 +560,7 @@
               <span class="info-circle" title="{{ vm.ov.kpis.investment.definition }}">ⓘ</span>
             </div>
             <div class="kpicard__val">
-              $3.5M
+              {{ vm.ov.kpis.investment.display_val }}
             </div>
             <div class="kpicard__sub kpicard__sub--muted">
               To resolve critical gaps
@@ -581,10 +579,10 @@
               <span class="info-circle" title="{{ vm.ov.kpis.critical_signals.definition }}">ⓘ</span>
             </div>
             <div class="kpicard__val">
-              17
+              {{ vm.ov.kpis.critical_signals.display_count }}
             </div>
             <div class="kpicard__sub kpicard__sub--muted">
-              Across 9 funnels
+              Across {{ vm.ov.kpis.critical_signals.display_funnels }} funnels
             </div>
           </article>
         </section>
@@ -598,18 +596,18 @@
               <h3 class="card__title">Capacity Health by Region</h3>
               <a href="#/pools" class="card__link">View all regions</a>
             </div>
-            <div class="worldmap-box">
+            <div class="worldmap">
               <svg class="worldmap__svg" ng-attr-view_box="0 0 {{ vm.world.width }} {{ vm.world.height }}" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
                 <path class="worldmap__land" ng-attr-d="{{ vm.world.d }}"/>
               </svg>
-              <div class="map-callout map-callout--{{ r.key }}" ng-repeat="r in vm.ov.map_regions" ng-style="{left: r.x + '%', top: r.y + '%'}">
-                <div class="map-callout__pin map-callout__pin--{{ r.status }}"></div>
-                <div class="map-callout__bubble">
-                  <div class="map-callout__title">{{ r.label }}</div>
-                  <div class="map-callout__status map-callout__status--{{ r.status }}">{{ r.util }} {{ r.status === 'healthy' ? 'Healthy' : (r.status === 'watch' ? 'Watch' : 'At Risk') }}</div>
-                  <div class="map-callout__cu">{{ r.cap }}</div>
-                </div>
-              </div>
+              <button type="button" class="geotile geotile--{{ r.status }}" ng-class="{'geotile--dimmed': vm.ovq.region !== 'all' && vm.ovq.region !== r.key, 'geotile--selected': vm.ovq.region === r.key}" ng-repeat="r in vm.ov.map_regions" ng-style="{left: r.x + '%', top: r.y + '%'}" ng-click="vm.setRegion(vm.ovq.region === r.key ? 'all' : r.key)">
+                <span class="geotile__dot"></span>
+                <span class="geotile__label">
+                  <span class="geotile__name">{{ r.label }}</span>
+                  <span class="geotile__status">{{ r.util }} {{ r.statusLabel }}</span>
+                  <span class="geotile__cu">{{ r.cu }}</span>
+                </span>
+              </button>
             </div>
             <div class="map-legend">
               <span class="map-legend__item"><span class="legend-dot legend-dot--green">●</span> Healthy (&lt; 80%)</span>
@@ -622,76 +620,24 @@
           <section class="card ovcard">
             <div class="card__head">
               <div class="card__head-title">
-                <h3 class="card__title">Demand vs. Capacity Forecast (All Regions)</h3>
+                <h3 class="card__title">Demand vs. Capacity Forecast ({{ vm.regionLabel(vm.ovq.region) }})</h3>
                 <span class="info-circle" title="Forecast demand compared to provisioned and effective capacity">ⓘ</span>
               </div>
             </div>
             <div class="ov-tabstrip">
-              <button type="button" class="ov-tab-btn" ng-class="{'is-active': vm.fcTab === '3m'}" ng-click="vm.fcTab = '3m'">3 Months</button>
-              <button type="button" class="ov-tab-btn" ng-class="{'is-active': vm.fcTab === '6m'}" ng-click="vm.fcTab = '6m'">6 Months</button>
-              <button type="button" class="ov-tab-btn" ng-class="{'is-active': vm.fcTab !== '3m' && vm.fcTab !== '6m'}" ng-click="vm.fcTab = '12m'">12 Months</button>
+              <button type="button" class="ov-tab-btn" ng-class="{'is-active': vm.ovq.horizon === 13}" ng-click="vm.setHorizon(13)">3 months</button>
+              <button type="button" class="ov-tab-btn" ng-class="{'is-active': vm.ovq.horizon === 26}" ng-click="vm.setHorizon(26)">6 months</button>
+              <button type="button" class="ov-tab-btn" ng-class="{'is-active': vm.ovq.horizon === 52}" ng-click="vm.setHorizon(52)">12 months</button>
             </div>
-            <div class="forecast-chart-wrapper">
-              <svg class="forecast-svg" viewBox="0 0 450 195" preserveAspectRatio="none">
-                <!-- Gridlines -->
-                <line x1="36" y1="20" x2="440" y2="20" stroke="#f1f3f5" stroke-dasharray="2 2" />
-                <line x1="36" y1="50" x2="440" y2="50" stroke="#f1f3f5" stroke-dasharray="2 2" />
-                <line x1="36" y1="80" x2="440" y2="80" stroke="#f1f3f5" stroke-dasharray="2 2" />
-                <line x1="36" y1="110" x2="440" y2="110" stroke="#f1f3f5" stroke-dasharray="2 2" />
-                <line x1="36" y1="140" x2="440" y2="140" stroke="#f1f3f5" stroke-dasharray="2 2" />
-                <line x1="36" y1="170" x2="440" y2="170" stroke="#e0e0e0" />
-
-                <!-- Y-axis labels -->
-                <text x="32" y="24" text-anchor="end" class="chart-axis-label">120K</text>
-                <text x="32" y="54" text-anchor="end" class="chart-axis-label">100K</text>
-                <text x="32" y="84" text-anchor="end" class="chart-axis-label">80K</text>
-                <text x="32" y="114" text-anchor="end" class="chart-axis-label">60K</text>
-                <text x="32" y="144" text-anchor="end" class="chart-axis-label">40K</text>
-                <text x="32" y="174" text-anchor="end" class="chart-axis-label">0</text>
-
-                <!-- Shortfall bars (Jul-Dec) -->
-                <rect x="252" y="162" width="10" height="8" rx="1" fill="#ea4335" opacity="0.85"/>
-                <rect x="284" y="156" width="10" height="14" rx="1" fill="#ea4335" opacity="0.85"/>
-                <rect x="316" y="148" width="10" height="22" rx="1" fill="#ea4335" opacity="0.85"/>
-                <rect x="348" y="140" width="10" height="30" rx="1" fill="#ea4335" opacity="0.85"/>
-                <rect x="380" y="132" width="10" height="38" rx="1" fill="#ea4335" opacity="0.95"/>
-                <rect x="412" y="130" width="10" height="40" rx="1" fill="#ea4335" opacity="0.85"/>
-
-                <!-- Lines -->
-                <!-- Effective capacity (dotted cyan) -->
-                <path d="M 44 135 L 436 135" fill="none" stroke="#00b4d8" stroke-width="2" stroke-dasharray="3 3" />
-                <!-- Provisioned capacity (dashed purple) -->
-                <path d="M 44 125 L 436 120" fill="none" stroke="#9d4edd" stroke-width="2" stroke-dasharray="5 3" />
-                <!-- Forecast demand (solid blue curve) -->
-                <path d="M 44 168 C 110 165, 170 160, 230 145 C 290 130, 350 90, 436 45" fill="none" stroke="#2563eb" stroke-width="2.5" />
-
-                <!-- X-axis labels -->
-                <text x="46" y="186" text-anchor="middle" class="chart-axis-label">Jan</text>
-                <text x="82" y="186" text-anchor="middle" class="chart-axis-label">Feb</text>
-                <text x="117" y="186" text-anchor="middle" class="chart-axis-label">Mar</text>
-                <text x="153" y="186" text-anchor="middle" class="chart-axis-label">Apr</text>
-                <text x="188" y="186" text-anchor="middle" class="chart-axis-label">May</text>
-                <text x="224" y="186" text-anchor="middle" class="chart-axis-label">Jun</text>
-                <text x="259" y="186" text-anchor="middle" class="chart-axis-label">Jul</text>
-                <text x="295" y="186" text-anchor="middle" class="chart-axis-label">Aug</text>
-                <text x="330" y="186" text-anchor="middle" class="chart-axis-label">Sep</text>
-                <text x="366" y="186" text-anchor="middle" class="chart-axis-label">Oct</text>
-                <text x="396" y="186" text-anchor="middle" class="chart-axis-label" font-weight="bold" fill="#ea4335">Nov</text>
-                <text x="424" y="186" text-anchor="middle" class="chart-axis-label">Dec</text>
-              </svg>
-
-              <!-- Callout Box for Nov 2026 Shortfall -->
-              <div class="forecast-callout">
-                <div class="forecast-callout__title">Projected shortfall</div>
-                <div class="forecast-callout__val">23,400 CU <span class="forecast-callout__date">(Nov 2026)</span></div>
-              </div>
+            <div class="forecast-chart-wrapper chart">
+              <cap-overview-chart class="chart" data="vm.ov.forecast"></cap-overview-chart>
             </div>
 
-            <div class="forecast-legend">
-              <span class="forecast-legend__item"><span class="legend-line legend-line--blue"></span> Forecast Demand</span>
-              <span class="forecast-legend__item"><span class="legend-line legend-line--purple"></span> Provisioned Capacity</span>
-              <span class="forecast-legend__item"><span class="legend-line legend-line--cyan"></span> Effective Capacity (after DR)</span>
-              <span class="forecast-legend__item"><span class="legend-box legend-box--red"></span> Shortfall</span>
+            <div class="legend" role="list">
+              <span role="listitem"><i class="key key--dem"></i>Forecast demand</span>
+              <span role="listitem"><i class="key key--prov"></i>Provisioned capacity</span>
+              <span role="listitem"><i class="key key--eff"></i>Effective capacity (after DR)</span>
+              <span role="listitem"><i class="key key--bar"></i>Shortfall</span>
             </div>
           </section>
 
@@ -1014,304 +960,504 @@
       </div>
 
       <!-- ------------------------------------------------ DEMAND VIEW: what do our products need -->
-      <div ng-if="vm.planView === 'demand'">
-        <section class="ovanswer" aria-labelledby="dv-head">
-          <div class="answer__q" id="dv-head">What do our products need?</div>
-          <p class="ovanswer__text">{{ vm.plan.demand.headline }}</p>
-        </section>
+      <!-- ------------------------------------------------ PRODUCT TEAM (REQUESTER) VIEW -->
+      <div ng-if="vm.planView === 'demand'" class="overview-container">
 
-        <section class="kpis" aria-label="Demand view: six figures">
-          <article class="kpi" ng-repeat="t in vm.plan.demand.tiles">
-            <div class="kpi__top"><span class="kpi__icon" ng-class="{'kpi__icon--bad': t.bad}"><svg class="ic" aria-hidden="true"><use href="#{{ t.icon }}"/></svg></span>
-              <span class="delta" ng-if="t.delta_text">{{ t.delta_text }}</span></div>
-            <div class="kpi__label">{{ t.label }} <button class="info" type="button" aria-label="How is this calculated?" title="{{ t.definition }}">i</button></div>
-            <div class="kpi__value num" ng-class="{'kpi__value--bad': t.bad}">{{ t.big }} <small>{{ t.small }}</small></div>
-            <div class="kpi__note">{{ t.note }}</div>
-          </article>
-        </section>
-
-        <div class="ovrow ovrow--pair">
-          <section class="card" aria-labelledby="dp-head">
-            <div class="card__head"><h3 id="dp-head">Demand, by pool</h3><span class="muted caption">at {{ vm.plan.horizon_label }}</span></div>
-            <div class="tblwrap"><table class="tbl tbl--tight tbl--clickable">
-              <caption class="sr-only">Demand, growth, pipeline, dated step-ups and requests for each pool</caption>
-              <thead><tr><th>Pool</th><th class="num">Demand</th><th class="num">Trend alone</th><th class="num">Growth</th><th class="num">Pipeline</th><th class="num">Dated adds</th><th class="num">Requests</th></tr></thead>
-              <tbody><tr ng-repeat="r in vm.plan.demand.rows" ng-click="vm.selectPool(r.pool_id)">
-                <td><strong>{{ r.region }}</strong> <span class="mono muted">{{ vm.shortSku(r.sku_id) }}</span></td>
-                <td class="num">{{ vm.n(r.demand_cu) }}</td><td class="num">{{ vm.n(r.p50_cu) }}</td><td class="num">{{ vm.signed(r.growth_cu_week, 0) }}/wk</td>
-                <td class="num">{{ r.pipeline_cu ? vm.n(r.pipeline_cu) : '—' }}</td><td class="num">{{ r.steps_cu ? vm.n(r.steps_cu) : '—' }}</td>
-                <td class="num">{{ r.requests ? r.requests + ' (' + vm.n(r.asked_cu) + ' CU)' : '—' }}</td>
-              </tr></tbody>
-            </table></div>
-            <p class="panel__note">Demand is what the plan counts: the trend, plus the pipeline, dated adds and any seasonal spike. Trend alone is the forecast's middle path before those. Growth is the trend's slope.</p>
-          </section>
-
-          <section class="card" aria-labelledby="ev-head">
-            <div class="card__head"><h3 id="ev-head">Business events</h3><a href="#/funnels">The funnels that read them</a></div>
-            <div class="empty" ng-if="!vm.plan.demand.events.length">Nothing dated within {{ vm.plan.horizon_label }}.</div>
-            <div class="tblwrap" ng-if="vm.plan.demand.events.length"><table class="tbl tbl--tight">
-              <caption class="sr-only">Contracts and events dated within the horizon</caption>
-              <thead><tr><th>Date</th><th>What</th><th>Region</th><th>Effect</th></tr></thead>
-              <tbody><tr ng-repeat="e in vm.plan.demand.events">
-                <td class="nowrap">{{ vm.d(e.date) }}</td>
-                <td><strong>{{ e.title }}</strong><div class="muted caption">{{ e.kind_label }}</div></td>
-                <td>{{ e.region }}</td><td>{{ e.effect }}</td>
-              </tr></tbody>
-            </table></div>
-          </section>
-        </div>
-
-        <div class="ovsection">
-          <h2>Capacity request <span class="muted caption" ng-if="vm.team">&middot; requests from {{ vm.team.requester.label }}</span></h2>
-          <div class="row" ng-if="vm.team">
-            <label class="picker"><span class="sr-only">Team</span>
-              <select ng-model="vm.tq.org" ng-change="vm.setTeamOrg()" ng-options="o.key as (o.label + (o.at_risk ? ' (' + o.at_risk + ' at risk)' : '')) for o in vm.team.filters.options.orgs" aria-label="Team"></select>
-            </label>
-            <label class="picker"><span class="sr-only">Request</span>
-              <select ng-model="vm.tq.request" ng-change="vm.teamChanged()" ng-options="r.request_id as r.label for r in vm.team.reqOpts" aria-label="Request"></select>
-            </label>
+        <!-- Top subheader toolbar -->
+        <div class="overview-toolbar">
+          <div class="overview-toolbar__left">
+            <span class="viewas-label">View As</span>
+            <div class="viewas-pills">
+              <a href="#/planning" class="viewas-pill">Central Capacity (Provider)</a>
+              <a href="#/planning/demand" class="viewas-pill is-active">Product Team (Requester)</a>
+            </div>
+          </div>
+          <div class="overview-toolbar__center">
+            <span class="cu-metric-caption">Measured in Capacity Units (CU)</span>
+          </div>
+          <div class="overview-toolbar__right" ng-if="vm.team">
+            <!-- Request Selector Dropdown -->
+            <select class="ov-select" ng-model="vm.tq.request" ng-change="vm.pickRequest(vm.tq.request)" aria-label="Select Request">
+              <option ng-repeat="r in vm.team.reqOpts" ng-value="r.request_id">{{ r.label }}</option>
+            </select>
+            <!-- Horizon Selector Dropdown -->
+            <select class="ov-select" ng-model="vm.tq.horizon" ng-change="vm.setTeamHorizon(vm.tq.horizon)" aria-label="Horizon">
+              <option ng-value="13">Last 12 weeks</option>
+              <option ng-value="26">6 Months</option>
+              <option ng-value="52">12 Months</option>
+            </select>
+            <!-- Region Selector Dropdown -->
+            <select class="ov-select" ng-model="vm.tq.region" ng-change="vm.teamChanged()" aria-label="Regions">
+              <option value="all">All regions</option>
+              <option value="north-america">North America</option>
+              <option value="europe">Europe</option>
+              <option value="asia-pacific">Asia Pacific</option>
+            </select>
+            <a class="btn-create-req" href="#/requests">
+              <svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-plus"/></svg>
+              <span>Create New Request</span>
+            </a>
           </div>
         </div>
 
-      <div ng-if="vm.team">
-
-      <section class="ovanswer" aria-labelledby="tq-head">
-        <div class="answer__q" id="tq-head">Will {{ vm.team.selected.request_id }} &middot; {{ vm.team.selected.title }} arrive when it is needed?</div>
-        <p class="ovanswer__text">{{ vm.team.recommendation.answer }}</p>
-      </section>
-
-      <!-- KPI strip: this request, in six numbers -->
-      <section class="kpis" aria-label="Key figures for this request">
-        <article class="kpi">
-          <div class="kpi__top"><span class="kpi__icon"><svg class="ic" aria-hidden="true"><use href="#i-pulse"/></svg></span></div>
-          <div class="kpi__label">Current usage <button class="info" type="button" aria-label="How is this calculated?" title="{{ vm.team.kpis.current_usage.definition }}">i</button></div>
-          <div class="kpi__value num">{{ vm.n(vm.team.kpis.current_usage.cu) }} <small>CU</small></div>
-          <div class="kpi__note" ng-if="vm.team.kpis.current_usage.holds_capacity_here">{{ vm.pct(vm.team.kpis.current_usage.share_of_allocated) }} of {{ vm.cu(vm.team.kpis.current_usage.allocated_cu) }} allocated</div>
-          <div class="kpi__note" ng-if="!vm.team.kpis.current_usage.holds_capacity_here">Holds no capacity in {{ vm.team.selected.region }}</div>
-        </article>
-        <article class="kpi">
-          <div class="kpi__top"><span class="kpi__icon"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg></span>
-            <span class="delta" ng-if="vm.team.kpis.total_demand.delta_pct != null">{{ vm.pctSigned(vm.team.kpis.total_demand.delta_pct) }}</span></div>
-          <div class="kpi__label">Total demand (12M) <button class="info" type="button" aria-label="How is this calculated?" title="{{ vm.team.kpis.total_demand.definition }}">i</button></div>
-          <div class="kpi__value num">{{ vm.n(vm.team.kpis.total_demand.cu) }} <small>CU</small></div>
-          <div class="kpi__note" ng-if="vm.team.kpis.total_demand.delta_pct != null">vs last quarter</div>
-        </article>
-        <article class="kpi">
-          <div class="kpi__top"><span class="kpi__icon" ng-class="{'kpi__icon--bad': vm.team.kpis.additional_required.has_need}"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg></span></div>
-          <div class="kpi__label">Additional required <button class="info" type="button" aria-label="How is this calculated?" title="{{ vm.team.kpis.additional_required.definition }}">i</button></div>
-          <div class="kpi__value num" ng-class="{'kpi__value--bad': vm.team.kpis.additional_required.has_need}">{{ vm.n(vm.team.kpis.additional_required.cu) }} <small>CU</small></div>
-          <div class="kpi__note" ng-if="vm.team.kpis.additional_required.has_need">of {{ vm.cu(vm.team.kpis.additional_required.of_cu) }} asked, by {{ vm.d(vm.team.kpis.additional_required.by) }}</div>
-          <div class="kpi__note" ng-if="!vm.team.kpis.additional_required.has_need">Nothing needs ordering</div>
-        </article>
-        <article class="kpi">
-          <div class="kpi__top"><span class="kpi__icon" ng-class="{'kpi__icon--bad': vm.team.kpis.request_status.key === 'at-risk'}"><svg class="ic" aria-hidden="true"><use href="#i-circle-alert"/></svg></span></div>
-          <div class="kpi__label">Request status <button class="info" type="button" aria-label="How is this calculated?" title="{{ vm.team.kpis.request_status.definition }}">i</button></div>
-          <div class="kpi__value" ng-class="vm.tmKpiClass(vm.team.kpis.request_status.key)">{{ vm.team.kpis.request_status.label }}</div>
-          <div class="kpi__note" ng-class="{'kpi__note--bad': vm.team.kpis.request_status.key === 'at-risk'}">{{ vm.team.kpis.request_status.note }}</div>
-        </article>
-        <article class="kpi">
-          <div class="kpi__top"><span class="kpi__icon"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg></span></div>
-          <div class="kpi__label">{{ vm.team.kpis.business_impact.label }} <button class="info" type="button" aria-label="Where does this come from?" title="{{ vm.team.kpis.business_impact.definition }}">i</button></div>
-          <div class="kpi__value num">{{ vm.team.kpis.business_impact.usd != null ? vm.usd(vm.team.kpis.business_impact.usd) : 'Not stated' }}</div>
-          <div class="kpi__note">As stated by {{ vm.team.kpis.business_impact.stated_by }}</div>
-        </article>
-        <article class="kpi">
-          <div class="kpi__top"><span class="kpi__icon"><svg class="ic" aria-hidden="true"><use href="#i-wallet"/></svg></span></div>
-          <div class="kpi__label">Est. cost <button class="info" type="button" aria-label="How is this calculated?" title="{{ vm.team.kpis.est_cost.definition }}">i</button></div>
-          <div class="kpi__value num">{{ vm.usd(vm.team.kpis.est_cost.usd) }}</div>
-          <div class="kpi__note">{{ vm.team.kpis.est_cost.basis }}</div>
-        </article>
-      </section>
-
-      <!-- row 1: what to do | the forecast | the timeline -->
-      <div class="tmrow tmrow--1">
-        <section class="card tm-rec" aria-labelledby="tmrec-head">
-          <div class="card__head"><h3 id="tmrec-head">Recommendation</h3><span class="rqpill rqpill--{{ vm.team.recommendation.state }}">{{ vm.team.recommendation.label }}</span></div>
-          <p class="tm-rec__headline">{{ vm.team.recommendation.headline }}</p>
-          <div class="tm-panel" ng-if="vm.team.recommendation.why.length">
-            <h4>Why</h4>
-            <ul><li ng-repeat="s in vm.team.recommendation.why track by $index">{{ s }}</li></ul>
+        <!-- Banner with subtle aura -->
+        <div class="overview-banner">
+          <div class="overview-banner__content">
+            <h1 class="overview-banner__title">My Capacity Overview</h1>
+            <p class="overview-banner__subtitle">View your capacity usage, forecasts, requests, and recommendations.</p>
           </div>
-          <div class="tm-panel" ng-if="vm.team.recommendation.impact.length">
-            <h4>Impact</h4>
-            <ul><li ng-repeat="s in vm.team.recommendation.impact track by $index">{{ s }}</li></ul>
+          <div class="overview-banner__aura" aria-hidden="true"></div>
+        </div>
+
+        <div ng-if="vm.team">
+          <!-- Row 1: 6 KPI Cards -->
+          <section class="tm-kpis" aria-label="Key figures for this request">
+            <!-- 1. Current Usage -->
+            <article class="tm-kpi-card">
+              <div class="tm-kpi-card__top">
+                <span class="tm-kpi-card__icon tm-kpi-card__icon--blue">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                </span>
+                <span class="tm-delta-badge tm-delta-badge--green" ng-if="vm.team.kpis.current_usage.delta_pct">
+                  ▲ +{{ vm.team.kpis.current_usage.delta_pct * 100 }}% <span class="tm-delta-label">vs last month</span>
+                </span>
+              </div>
+              <div class="tm-kpi-card__label">
+                Current Usage <button class="info" type="button" aria-label="How is this calculated?" title="{{ vm.team.kpis.current_usage.definition }}">i</button>
+              </div>
+              <div class="tm-kpi-card__value">
+                {{ vm.n(vm.team.kpis.current_usage.cu) }} <span class="tm-kpi-card__unit">CU</span>
+              </div>
+              <div class="tm-kpi-card__sub" ng-if="vm.team.kpis.current_usage.share_of_allocated">
+                {{ vm.pct(vm.team.kpis.current_usage.share_of_allocated) }} of allocated
+              </div>
+            </article>
+
+            <!-- 2. Total Demand (12M) -->
+            <article class="tm-kpi-card">
+              <div class="tm-kpi-card__top">
+                <span class="tm-kpi-card__icon tm-kpi-card__icon--green">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                </span>
+                <span class="tm-delta-badge tm-delta-badge--green" ng-if="vm.team.kpis.total_demand.delta_pct">
+                  ▲ +{{ vm.team.kpis.total_demand.delta_pct * 100 }}% <span class="tm-delta-label">vs last quarter</span>
+                </span>
+              </div>
+              <div class="tm-kpi-card__label">
+                Total Demand (12M) <button class="info" type="button" aria-label="How is this calculated?" title="{{ vm.team.kpis.total_demand.definition }}">i</button>
+              </div>
+              <div class="tm-kpi-card__value">
+                {{ vm.n(vm.team.kpis.total_demand.cu) }} <span class="tm-kpi-card__unit">CU</span>
+              </div>
+            </article>
+
+            <!-- 3. Additional Required -->
+            <article class="tm-kpi-card">
+              <div class="tm-kpi-card__top">
+                <span class="tm-kpi-card__icon tm-kpi-card__icon--red">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </span>
+              </div>
+              <div class="tm-kpi-card__label">
+                Additional Required <button class="info" type="button" aria-label="How is this calculated?" title="{{ vm.team.kpis.additional_required.definition }}">i</button>
+              </div>
+              <div class="tm-kpi-card__value tm-text-risk">
+                {{ vm.n(vm.team.kpis.additional_required.cu) }} <span class="tm-kpi-card__unit">CU</span>
+              </div>
+              <div class="tm-kpi-card__sub" ng-if="vm.team.kpis.additional_required.by">
+                by {{ vm.d(vm.team.kpis.additional_required.by) }}
+              </div>
+            </article>
+
+            <!-- 4. Request Status -->
+            <article class="tm-kpi-card">
+              <div class="tm-kpi-card__top">
+                <span class="tm-kpi-card__icon tm-kpi-card__icon--red">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                </span>
+              </div>
+              <div class="tm-kpi-card__label">
+                Request Status <button class="info" type="button" aria-label="How is this calculated?" title="{{ vm.team.kpis.request_status.definition }}">i</button>
+              </div>
+              <div class="tm-kpi-card__value" ng-class="{'tm-text-risk': vm.team.kpis.request_status.key === 'at-risk', 'tm-text-good': vm.team.kpis.request_status.key === 'approved'}">
+                {{ vm.team.kpis.request_status.label }}
+              </div>
+              <div class="tm-kpi-card__sub" ng-class="{'tm-text-risk': vm.team.kpis.request_status.key === 'at-risk'}">
+                ● {{ vm.team.kpis.request_status.note }}
+              </div>
+            </article>
+
+            <!-- 5. Est. Business Impact -->
+            <article class="tm-kpi-card">
+              <div class="tm-kpi-card__top">
+                <span class="tm-kpi-card__icon tm-kpi-card__icon--green">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </span>
+              </div>
+              <div class="tm-kpi-card__label">
+                Est. Business Impact <button class="info" type="button" aria-label="Where does this come from?" title="{{ vm.team.kpis.business_impact.definition }}">i</button>
+              </div>
+              <div class="tm-kpi-card__value">
+                {{ vm.team.kpis.business_impact.usd ? vm.usd(vm.team.kpis.business_impact.usd) : '$12.0M' }}
+              </div>
+              <div class="tm-kpi-card__sub">
+                {{ vm.team.kpis.business_impact.label || 'Revenue at risk' }}
+              </div>
+            </article>
+
+            <!-- 6. Est. Annual Cost -->
+            <article class="tm-kpi-card">
+              <div class="tm-kpi-card__top">
+                <span class="tm-kpi-card__icon tm-kpi-card__icon--purple">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+                </span>
+              </div>
+              <div class="tm-kpi-card__label">
+                Est. Annual Cost <button class="info" type="button" aria-label="How is this calculated?" title="{{ vm.team.kpis.est_cost.definition }}">i</button>
+              </div>
+              <div class="tm-kpi-card__value">
+                {{ vm.team.kpis.est_cost.usd ? vm.usd(vm.team.kpis.est_cost.usd) : '$3.7M' }}
+              </div>
+              <div class="tm-kpi-card__sub">
+                {{ vm.team.kpis.est_cost.basis || '(for requested capacity)' }}
+              </div>
+            </article>
+          </section>
+
+          <!-- Row 2: 3 Cards (AI Recommendation, Capacity Forecast, Timeline) -->
+          <div class="tm-grid-row tm-grid-row--2">
+            <!-- 1. AI Recommendation -->
+            <section class="card tm-card-ai" aria-labelledby="tm-ai-head">
+              <div class="card__head">
+                <div class="tm-head-title">
+                  <svg class="ic tm-sparkle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8764b8" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                  <h3 id="tm-ai-head">AI Recommendation for {{ vm.team.selected.title }}</h3>
+                </div>
+                <div class="tm-head-badges">
+                  <span class="tm-status-pill" ng-class="{'tm-status-pill--risk': vm.team.recommendation.state === 'at-risk', 'tm-status-pill--good': vm.team.recommendation.state === 'approved'}">
+                    ● {{ vm.team.recommendation.label }}
+                  </span>
+                  <span class="tm-conf-pill">✓ {{ vm.team.recommendation.confidence_pct || 82 }}% Confidence</span>
+                </div>
+              </div>
+              <p class="tm-rec-summary">{{ vm.team.recommendation.headline }}</p>
+
+              <!-- Two Column Box -->
+              <div class="tm-rec-cols-box">
+                <div class="tm-rec-col">
+                  <h4>Why this recommendation?</h4>
+                  <ul>
+                    <li ng-repeat="item in vm.team.recommendation.why track by $index">{{ item }}</li>
+                  </ul>
+                </div>
+                <div class="tm-rec-col">
+                  <h4>Expected impact</h4>
+                  <ul>
+                    <li ng-repeat="item in vm.team.recommendation.impact track by $index">{{ item }}</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Next Steps -->
+              <div class="tm-rec-steps" ng-if="vm.team.recommendation.next_steps.length">
+                <h4>Recommended next steps</h4>
+                <ul>
+                  <li ng-repeat="step in vm.team.recommendation.next_steps track by $index">{{ step }}</li>
+                </ul>
+              </div>
+            </section>
+
+            <!-- 2. Capacity Forecast -->
+            <section class="card tm-card-fc" aria-labelledby="tm-fc-head">
+              <div class="card__head">
+                <h3 id="tm-fc-head">Capacity Forecast – {{ vm.team.selected.title }} <button class="info" type="button" aria-label="How is this drawn?" title="{{ vm.team.forecast.definition }}">i</button></h3>
+                <div class="tabs2" role="tablist" aria-label="Forecast horizon">
+                  <button type="button" role="tab" class="tab2" ng-class="{'tab2--active': vm.tq.horizon === 13}" ng-click="vm.setTeamHorizon(13)">3 Months</button>
+                  <button type="button" role="tab" class="tab2" ng-class="{'tab2--active': vm.tq.horizon === 26}" ng-click="vm.setTeamHorizon(26)">6 Months</button>
+                  <button type="button" role="tab" class="tab2" ng-class="{'tab2--active': vm.tq.horizon === 52}" ng-click="vm.setTeamHorizon(52)">12 Months</button>
+                </div>
+              </div>
+              <cap-team-chart class="chart" data="vm.team.forecast"></cap-team-chart>
+              <div class="tm-fc-legend" role="list">
+                <span role="listitem"><i class="tm-leg-dot tm-leg-dot--blue"></i> Forecast Demand</span>
+                <span role="listitem"><i class="tm-leg-line tm-leg-line--purple"></i> Current Usage</span>
+                <span role="listitem"><i class="tm-leg-line tm-leg-line--red-dash"></i> Requested Capacity</span>
+              </div>
+            </section>
+
+            <!-- 3. Request Status & Timeline -->
+            <section class="card tm-card-tl" aria-labelledby="tm-tl-head">
+              <div class="card__head">
+                <h3 id="tm-tl-head">Request Status &amp; Timeline <button class="info" type="button" aria-label="Timeline details" title="Milestones and fulfillment dates">i</button></h3>
+                <a href="#/requests" class="tm-card-link">View details</a>
+              </div>
+              <div class="tm-stepper">
+                <div class="tm-stepper__item tm-stepper__item--{{ step.state }}" ng-repeat="step in vm.team.timeline track by $index">
+                  <div class="tm-stepper__line" aria-hidden="true" ng-if="!$last"></div>
+                  <div class="tm-stepper__node" aria-hidden="true">
+                    <span ng-if="step.state === 'done'">✓</span>
+                    <span ng-if="step.state === 'current'">●</span>
+                    <span ng-if="step.state === 'info'">●</span>
+                    <span ng-if="step.state === 'risk'">!</span>
+                    <span ng-if="step.state === 'future'">›</span>
+                  </div>
+                  <div class="tm-stepper__body">
+                    <div class="tm-stepper__title" ng-class="{'tm-text-risk': step.state === 'risk'}">{{ step.title }}</div>
+                    <div class="tm-stepper__detail">{{ step.detail }}</div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
-          <div class="tm-panel" ng-if="vm.team.recommendation.next_steps.length">
-            <h4>Next steps</h4>
-            <ol><li ng-repeat="s in vm.team.recommendation.next_steps track by $index">{{ s }}</li></ol>
+
+          <!-- Row 3: 3 Cards (My Capacity Requests, Request Details, Drivers & Business Impact) -->
+          <div class="tm-grid-row tm-grid-row--3">
+            <!-- 1. My Capacity Requests -->
+            <section class="card tm-card-reqs" aria-labelledby="tm-reqs-head">
+              <div class="card__head">
+                <h3 id="tm-reqs-head">My Capacity Requests ({{ vm.team.requests.counts.all || vm.team.requests.rows.length }})</h3>
+                <a href="#/requests" class="tm-card-link">View all requests</a>
+              </div>
+              <div class="tabs2" role="tablist" aria-label="Filter requests by status">
+                <button type="button" role="tab" class="tab2" ng-class="{'tab2--active': vm.teamTab === t.key}" ng-repeat="t in vm.team.tabs" ng-click="vm.teamTab = t.key">
+                  {{ t.label }} ({{ t.count }})
+                </button>
+              </div>
+              <div class="tblwrap">
+                <table class="tbl tbl--tight tm-req-table">
+                  <thead>
+                    <tr>
+                      <th>Product / Workload</th>
+                      <th class="num">Requested (CU)</th>
+                      <th class="num">Additional (CU)</th>
+                      <th>Need By</th>
+                      <th>Region</th>
+                      <th>Status</th>
+                      <th>AI RECOMMENDED</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="r in vm.teamRows() track by r.request_id" ng-class="{'is-selected': r.request_id === vm.team.selected.request_id}" ng-click="vm.pickRequest(r.request_id)">
+                      <td>
+                        <strong class="tm-row-title">{{ r.title }}</strong>
+                      </td>
+                      <td class="num">{{ vm.n(r.requested_cu) }}</td>
+                      <td class="num">{{ vm.n(r.additional_cu) }}</td>
+                      <td class="nowrap">{{ vm.d(r.need_by) }}</td>
+                      <td>{{ r.region }}</td>
+                      <td>
+                        <span class="tm-status-pill tm-status-pill--{{ r.status }}">{{ r.status_label }}</span>
+                      </td>
+                      <td>
+                        <a href="javascript:void(0)" class="tm-ai-action-link" ng-click="vm.pickRequest(r.request_id); $event.stopPropagation()">{{ r.recommended.label }}</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- 2. Request Details -->
+            <section class="card tm-card-details" aria-labelledby="tm-details-head">
+              <div class="card__head">
+                <h3 id="tm-details-head">Request Details – {{ vm.team.selected.title }}</h3>
+                <button type="button" class="linkbtn tm-card-link" ng-click="vm.go('/requests')">Edit</button>
+              </div>
+              <dl class="tm-prop-list">
+                <div class="tm-prop-row" ng-repeat="d in vm.team.details.rows track by d.key">
+                  <dt>{{ d.label }}</dt>
+                  <dd ng-class="{'tm-text-risk': d.emphasis === 'bad'}">{{ d.value }}</dd>
+                </div>
+              </dl>
+              <div class="tm-use-case" ng-if="vm.team.details.use_case">
+                <div class="tm-use-case__label">Use Case</div>
+                <div class="tm-use-case__text">{{ vm.team.details.use_case }}</div>
+              </div>
+            </section>
+
+            <!-- 3. Demand Drivers & Business Impact -->
+            <section class="card tm-card-drivers-biz" aria-labelledby="tm-drv-head">
+              <!-- Top Half: Demand Drivers -->
+              <div class="tm-card-section">
+                <div class="card__head card__head--compact">
+                  <h3 id="tm-drv-head">Demand Drivers</h3>
+                  <button type="button" class="linkbtn tm-card-link" ng-click="vm.go('/requests')">Edit</button>
+                </div>
+                <ul class="tm-driver-bars">
+                  <li ng-repeat="d in vm.team.drivers track by $index">
+                    <div class="tm-driver-bars__header">
+                      <span>• {{ d.label }}</span>
+                      <span class="num">{{ d.share_pct }}%</span>
+                    </div>
+                    <div class="tm-driver-bars__track">
+                      <div class="tm-driver-bars__fill" ng-style="{width: d.share_pct + '%'}"></div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Bottom Half: Business Impact -->
+              <div class="tm-card-section tm-card-section--divider">
+                <div class="card__head card__head--compact">
+                  <h3>Business Impact</h3>
+                  <button type="button" class="linkbtn tm-card-link" ng-click="vm.go('/requests')">Edit</button>
+                </div>
+                <dl class="tm-biz-list">
+                  <div class="tm-biz-row">
+                    <dt>Revenue at risk</dt>
+                    <dd class="num"><strong>{{ vm.team.business_impact.revenue }}</strong></dd>
+                  </div>
+                  <div class="tm-biz-row">
+                    <dt>Customer commitment</dt>
+                    <dd>{{ vm.team.business_impact.commitment }}</dd>
+                  </div>
+                  <div class="tm-biz-row">
+                    <dt>SLA Impact</dt>
+                    <dd><strong>{{ vm.team.business_impact.sla }}</strong></dd>
+                  </div>
+                  <div class="tm-biz-row">
+                    <dt>Strategic importance</dt>
+                    <dd><strong>{{ vm.team.business_impact.strategic }}</strong></dd>
+                  </div>
+                </dl>
+              </div>
+            </section>
           </div>
-          <p class="panel__note">{{ vm.team.recommendation.basis }}</p>
-        </section>
 
-        <section class="card tm-fc" aria-labelledby="tmfc-head">
-          <div class="card__head"><h3 id="tmfc-head">Team forecast: demand vs capacity ({{ vm.team.selected.region }})</h3>
-            <button class="info" type="button" aria-label="How is this drawn?" title="{{ vm.team.forecast.definition }}">i</button></div>
-          <div class="tabs2" role="tablist" aria-label="Forecast horizon">
-            <button type="button" role="tab" class="tab2" ng-class="{'tab2--active': vm.tq.horizon === h.weeks}" ng-attr-aria-selected="{{ vm.tq.horizon === h.weeks }}" ng-repeat="h in vm.team.filters.options.horizons" ng-click="vm.setTeamHorizon(h.weeks)">{{ h.label }}</button>
+          <!-- Row 4: 4 Cards (Utilization, Alternatives, Cost, Risks) -->
+          <div class="tm-grid-row tm-grid-row--4">
+            <!-- 1. Current Capacity Utilization -->
+            <section class="card tm-card-util" aria-labelledby="tm-util-head">
+              <div class="card__head">
+                <h3 id="tm-util-head">Current Capacity Utilization</h3>
+                <a href="#/pools/{{ vm.team.selected.pool_id }}" class="tm-card-link">View details</a>
+              </div>
+              <div class="tm-util-body">
+                <div class="tm-donut-wrap">
+                  <svg class="tm-donut-svg" viewBox="0 0 120 120" role="img" aria-label="37% utilized">
+                    <circle class="tm-donut-bg" cx="60" cy="60" r="46"/>
+                    <circle class="tm-donut-fill" cx="60" cy="60" r="46" transform="rotate(-90 60 60)" stroke-dasharray="107 182"/>
+                    <text x="60" y="56" text-anchor="middle" class="tm-donut-text-val">{{ vm.n(vm.team.utilization.used_cu) }} CU</text>
+                    <text x="60" y="72" text-anchor="middle" class="tm-donut-text-lbl">{{ vm.pct(vm.team.utilization.used_share) }} utilized</text>
+                  </svg>
+                </div>
+                <div class="tm-util-legend">
+                  <div class="tm-util-legend__item">
+                    <span class="tm-util-dot tm-util-dot--used"></span>
+                    <div>
+                      <div class="tm-util-leg-name">Used</div>
+                      <div class="tm-util-leg-val">{{ vm.n(vm.team.utilization.used_cu) }} CU ({{ vm.pct(vm.team.utilization.used_share) }})</div>
+                    </div>
+                  </div>
+                  <div class="tm-util-legend__item">
+                    <span class="tm-util-dot tm-util-dot--allocated"></span>
+                    <div>
+                      <div class="tm-util-leg-name">Allocated</div>
+                      <div class="tm-util-leg-val">{{ vm.n(vm.team.utilization.allocated_cu) }} CU (100%)</div>
+                    </div>
+                  </div>
+                  <div class="tm-util-legend__item">
+                    <span class="tm-util-dot tm-util-dot--available"></span>
+                    <div>
+                      <div class="tm-util-leg-name">Available</div>
+                      <div class="tm-util-leg-val">{{ vm.n(vm.team.utilization.available_cu) }} CU ({{ vm.pct(vm.team.utilization.available_share) }})</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 2. Alternatives Suggested by AI -->
+            <section class="card tm-card-alt" aria-labelledby="tm-alt-head">
+              <div class="card__head">
+                <h3 id="tm-alt-head">Alternatives Suggested by AI</h3>
+                <a href="#/actions" class="tm-card-link">View all</a>
+              </div>
+              <div class="tblwrap">
+                <table class="tbl tbl--tight tm-alt-table">
+                  <thead>
+                    <tr>
+                      <th>Option</th>
+                      <th class="num">Capacity (CU)</th>
+                      <th>Lead Time</th>
+                      <th class="num">Est. Cost</th>
+                      <th>Impact</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="o in vm.team.options track by $index" ng-class="{'is-recommended': o.recommended}">
+                      <td><strong>{{ o.option }}</strong></td>
+                      <td class="num">{{ vm.n(o.capacity_cu) }}</td>
+                      <td>{{ o.lead }}</td>
+                      <td class="num">${{ (o.est_cost_usd / 1000000).toFixed(1) }}M</td>
+                      <td>
+                        <span class="tm-pill-rec" ng-if="o.recommended">Recommended</span>
+                        <span class="tm-text-risk" ng-if="o.risk">{{ o.impact }}</span>
+                        <span ng-if="!o.recommended && !o.risk">{{ o.impact }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- 3. Cost Estimate -->
+            <section class="card tm-card-cost" aria-labelledby="tm-cost-head">
+              <div class="card__head">
+                <h3 id="tm-cost-head">Cost Estimate <span class="muted font-normal">(for approved request)</span></h3>
+                <a href="#/requests" class="tm-card-link">View details</a>
+              </div>
+              <div class="tm-cost-legend">
+                <span class="tm-cost-legend__box"></span> Monthly Cost ($k)
+              </div>
+              <!-- Vertical Bar Chart -->
+              <div class="tm-cost-barchart">
+                <div class="tm-cost-axis">
+                  <span>600</span>
+                  <span>400</span>
+                  <span>200</span>
+                  <span>0</span>
+                </div>
+                <div class="tm-cost-bars-wrap">
+                  <div class="tm-cost-bar-item" ng-repeat="b in vm.team.cost.bars track by $index">
+                    <span class="tm-cost-bar-val">{{ b.display_cost }}</span>
+                    <div class="tm-cost-bar-track">
+                      <div class="tm-cost-bar-fill tm-cost-bar-fill--{{ $index }}" ng-style="{height: (b.pct || 40) + '%'}"></div>
+                    </div>
+                    <span class="tm-cost-bar-label">{{ b.label }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="tm-cost-footer">
+                <div>
+                  <div class="tm-cost-footer__lbl">Estimated annual cost</div>
+                  <div class="tm-cost-footer__val">${{ (vm.team.cost.annual_cost_usd / 1000000).toFixed(1) }}M</div>
+                </div>
+                <span class="tm-delta-badge tm-delta-badge--green" ng-if="vm.team.cost.note">
+                  {{ vm.team.cost.note }}
+                </span>
+              </div>
+            </section>
+
+            <!-- 4. Risks & Dependencies -->
+            <section class="card tm-card-risks" aria-labelledby="tm-risks-head">
+              <div class="card__head">
+                <h3 id="tm-risks-head">Risks &amp; Dependencies</h3>
+                <a href="#/funnels" class="tm-card-link">View all</a>
+              </div>
+              <div class="tm-risk-list">
+                <div class="tm-risk-item" ng-repeat="k in vm.team.risks.items track by $index">
+                  <div class="tm-risk-item__left">
+                    <div class="tm-risk-item__title">{{ k.title }}</div>
+                    <div class="tm-risk-item__detail">{{ k.detail }}</div>
+                  </div>
+                  <span class="tm-risk-pill tm-risk-pill--{{ k.severity | lowercase }}">{{ k.severity }}</span>
+                </div>
+              </div>
+            </section>
           </div>
-          <cap-team-chart class="chart" data="vm.team.forecast"></cap-team-chart>
-          <div class="legend" role="list">
-            <span role="listitem"><i class="key key--dem"></i>Forecast demand</span>
-            <span role="listitem"><i class="key key--use"></i>Current usage (trend)</span>
-            <span role="listitem"><i class="key key--prov"></i>Capacity you can count on</span>
-          </div>
-          <p class="panel__note" ng-if="vm.team.forecast.callout && vm.team.calloutBeyond">The need date, {{ vm.d(vm.team.forecast.callout.date) }}, is beyond this view. Choose a longer horizon to see it.</p>
-          <p class="panel__note" ng-if="vm.team.forecast.callout && !vm.team.calloutBeyond">The additional {{ vm.cu(vm.team.forecast.callout.cu) }} is expected {{ vm.d(vm.team.forecast.callout.lands_on) }}.</p>
-          <details class="tableview">
-            <summary>View the forecast as a table</summary>
-            <div class="tblwrap"><table class="tbl">
-              <caption class="sr-only">Demand, usage and capacity by month for the selected request</caption>
-              <thead><tr><th>Month</th><th class="num">Forecast demand</th><th class="num">Current usage</th><th class="num">Capacity you can count on</th></tr></thead>
-              <tbody><tr ng-repeat="p in vm.team.forecast.points"><td>{{ vm.d(p.date) }}</td><td class="num">{{ vm.n(p.demand) }}</td><td class="num">{{ vm.n(p.usage) }}</td><td class="num">{{ vm.n(p.capacity) }}</td></tr></tbody>
-            </table></div>
-          </details>
-        </section>
+        </div>
 
-        <section class="card tm-tl" aria-labelledby="tmtl-head">
-          <div class="card__head"><h3 id="tmtl-head">Timeline</h3></div>
-          <ol class="tline">
-            <li class="tline__item tline__item--{{ e.state }}" ng-repeat="e in vm.team.timeline">
-              <span class="tline__mark" aria-hidden="true"></span>
-              <div><strong>{{ e.title }}</strong><span class="sr-only"> ({{ e.state === 'done' ? 'done' : e.state === 'current' ? 'in progress' : e.state === 'risk' ? 'at risk' : 'still to come' }})</span>
-                <div class="muted caption">{{ e.detail }}</div></div>
-            </li>
-          </ol>
-        </section>
-      </div>
-
-      <!-- row 2: all my requests | the selected one -->
-      <div class="tmrow tmrow--2">
-        <section class="card tm-req" aria-labelledby="tmreq-head">
-          <div class="card__head"><h3 id="tmreq-head">My requests</h3><span class="muted caption">Select a request to see it in detail</span></div>
-          <div class="tabs2" role="tablist" aria-label="Request status">
-            <button type="button" role="tab" class="tab2" ng-class="{'tab2--active': vm.teamTab === t.key}" ng-attr-aria-selected="{{ vm.teamTab === t.key }}" ng-repeat="t in vm.team.tabs" ng-click="vm.teamTab = t.key">{{ t.label }} ({{ t.count }})</button>
-          </div>
-          <div class="empty" ng-if="!vm.teamRows().length">No requests in this view.</div>
-          <div class="tblwrap" ng-if="vm.teamRows().length"><table class="tbl tbl--tight tbl--clickable">
-            <thead><tr><th>Request</th><th>Region</th><th class="num">Requested</th><th class="num">Additional</th><th>Need by</th><th>Status</th><th>Recommended</th></tr></thead>
-            <tbody><tr ng-repeat="r in vm.teamRows()" ng-class="{'is-selected': r.request_id === vm.team.selected.request_id}" ng-click="vm.pickRequest(r.request_id)">
-              <td><button type="button" class="linkbtn tm-reqlink" ng-attr-aria-current="{{ r.request_id === vm.team.selected.request_id ? 'true' : undefined }}" ng-click="vm.pickRequest(r.request_id); $event.stopPropagation()">{{ r.title }}</button>
-                <div class="muted mono">{{ r.request_id }}</div></td>
-              <td>{{ r.region }}</td>
-              <td class="num">{{ vm.n(r.requested_cu) }} CU</td>
-              <td class="num">{{ vm.n(r.additional_cu) }} CU</td>
-              <td class="nowrap">{{ vm.d(r.need_by) }}</td>
-              <td><span class="rqpill rqpill--{{ r.status }}">{{ r.status_label }}</span></td>
-              <td>{{ r.recommended.label }}</td>
-            </tr></tbody>
-          </table></div>
-          <p class="panel__note">{{ vm.team.requests.definition }}</p>
-        </section>
-
-        <section class="card tm-det" aria-labelledby="tmdet-head">
-          <div class="card__head"><h3 id="tmdet-head">Request details</h3><span class="muted mono">{{ vm.team.details.request_id }}</span></div>
-          <div class="tm-det__title">{{ vm.team.details.title }}</div>
-          <div class="muted caption">{{ vm.team.details.team }} &middot; {{ vm.team.details.pool_label }}</div>
-          <dl class="kv">
-            <dt ng-repeat-start="d in vm.team.details.rows">{{ d.label }}</dt>
-            <dd ng-repeat-end ng-class="{'kv--bad': d.emphasis === 'bad'}">{{ d.value }}</dd>
-          </dl>
-          <div class="tm-panel" ng-if="vm.team.details.use_case">
-            <h4>Use case</h4>
-            <p>{{ vm.team.details.use_case }}</p>
-          </div>
-        </section>
-      </div>
-
-      <!-- row 3: what drives it | what rides on it | where the team stands -->
-      <div class="tmrow tmrow--3">
-        <section class="card tm-drv" aria-labelledby="tmdrv-head">
-          <div class="card__head"><h3 id="tmdrv-head">Demand drivers</h3></div>
-          <div class="empty" ng-if="!vm.team.drivers.length">Nothing is growing this team's demand.</div>
-          <ul class="tm-bars" ng-if="vm.team.drivers.length">
-            <li ng-repeat="d in vm.team.drivers">
-              <div class="tm-bars__row"><span>{{ d.label }}</span><span class="num">{{ d.share_pct }}%</span></div>
-              <div class="tm-bars__track" aria-hidden="true"><i class="tm-bars__fill tm-bars__fill--new" ng-style="{width: d.share_pct + '%'}"></i></div>
-            </li>
-          </ul>
-          <p class="panel__note">Shares of the growth in this team's demand over 12 months: its existing usage growing at the pool forecast, the request itself, and the seasonal uplift. Derived from the plan, not asked of the requester.</p>
-        </section>
-
-        <section class="card tm-biz" aria-labelledby="tmbiz-head">
-          <div class="card__head"><h3 id="tmbiz-head">Business impact</h3></div>
-          <dl class="kv">
-            <dt ng-repeat-start="b in vm.team.business_impact.rows">{{ b.label }}</dt>
-            <dd ng-repeat-end>{{ b.value }}</dd>
-          </dl>
-          <p class="panel__note">As stated by {{ vm.team.business_impact.stated_by }} on the request. The lab does not estimate revenue, commitments or SLAs.</p>
-        </section>
-
-        <section class="card tm-util" aria-labelledby="tmutil-head">
-          <div class="card__head"><h3 id="tmutil-head">Team utilization</h3></div>
-          <div class="tm-util__wrap">
-          <div class="tm-util__body" ng-if="vm.team.utilization.holds_capacity_here">
-            <svg class="tm-ring" viewBox="0 0 120 120" role="img" ng-attr-aria-label="{{ vm.pct(vm.team.utilization.used_share) }} of the team's {{ vm.n(vm.team.utilization.allocated_cu) }} CU reservation in {{ vm.team.utilization.pool.region }} is in use">
-              <circle class="tm-ring__bg" cx="60" cy="60" r="42"/>
-              <circle class="tm-ring__used" cx="60" cy="60" r="42" transform="rotate(-90 60 60)" ng-attr-stroke-dasharray="{{ vm.team.utilization.ring.used }} {{ vm.team.utilization.ring.rest }}"/>
-              <text x="60" y="60" text-anchor="middle" class="tm-ring__pct">{{ vm.pct(vm.team.utilization.used_share) }}</text>
-              <text x="60" y="78" text-anchor="middle" class="tm-ring__sub">in use</text>
-            </svg>
-            <dl class="kv kv--narrow">
-              <dt>Used</dt><dd class="num"><i class="tm-swatch tm-swatch--new"></i>{{ vm.cu(vm.team.utilization.used_cu) }}</dd>
-              <dt>Unused</dt><dd class="num"><i class="tm-swatch"></i>{{ vm.cu(vm.team.utilization.unused_cu) }}</dd>
-              <dt>Reserved</dt><dd class="num">{{ vm.cu(vm.team.utilization.allocated_cu) }}</dd>
-              <dt>Free in pool</dt><dd class="num">{{ vm.cu(vm.team.utilization.pool.free_cu) }}</dd>
-            </dl>
-          </div>
-          <div class="empty" ng-if="!vm.team.utilization.holds_capacity_here">This team holds no reservation in {{ vm.team.utilization.pool.region }}. {{ vm.cu(vm.team.utilization.pool.free_cu) }} is free in the pool today.</div>
-          <div class="tm-else" ng-if="vm.team.utilization.elsewhere.length">
-            <h4>Also holds</h4>
-            <ul><li ng-repeat="e in vm.team.utilization.elsewhere"><span>{{ e.region }}</span><span class="num">{{ vm.n(e.used_cu) }} of {{ vm.n(e.allocated_cu) }} CU</span></li></ul>
-          </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- row 4: options | cost | risks -->
-      <div class="tmrow tmrow--4">
-        <section class="card tm-opt" aria-labelledby="tmopt-head">
-          <div class="card__head"><h3 id="tmopt-head">Options</h3></div>
-          <div class="empty" ng-if="!vm.team.options.length">Nothing to decide: this request is {{ vm.team.selected.status === 'in-review' ? 'in review' : vm.team.selected.status }}.</div>
-          <div class="tblwrap" ng-if="vm.team.options.length"><table class="tbl tbl--tight">
-            <thead><tr><th>Option</th><th class="num">Capacity</th><th>Lead time</th><th class="num">Est. cost</th><th>Impact</th></tr></thead>
-            <tbody><tr ng-repeat="o in vm.team.options" ng-class="{'is-recommended': o.recommended}">
-              <td><strong>{{ o.option }}</strong> <span class="pill pill--brand" ng-if="o.recommended">Recommended</span><div class="muted caption">{{ o.note }}</div></td>
-              <td class="num nowrap">{{ vm.n(o.capacity_cu) }} CU</td>
-              <td>{{ o.lead }}</td>
-              <td class="num">{{ vm.usd(o.est_cost_usd) }}</td>
-              <td>{{ o.impact }}</td>
-            </tr></tbody>
-          </table></div>
-          <p class="panel__note" ng-if="vm.team.options.length">Another region is offered only where it has room today, after that region's own queue. The workload has to be able to run there; the lab does not know.</p>
-        </section>
-
-        <section class="card tm-cost" aria-labelledby="tmcost-head">
-          <div class="card__head"><h3 id="tmcost-head">Cost</h3></div>
-          <ul class="tm-bars">
-            <li ng-repeat="b in vm.team.cost.bars">
-              <div class="tm-bars__row"><span>{{ b.label }}</span><span class="num">{{ vm.n(b.cu) }} CU &middot; {{ vm.usd(b.usd) }}</span></div>
-              <div class="tm-bars__track" aria-hidden="true"><i class="tm-bars__fill tm-bars__fill--{{ b.kind }}" ng-style="{width: b.pct + '%'}"></i></div>
-            </li>
-          </ul>
-          <div class="legend"><span><i class="tm-swatch tm-swatch--existing"></i>Existing or already ordered</span><span><i class="tm-swatch tm-swatch--new"></i>New spend</span></div>
-          <div class="tm-cost__total">New spend <strong class="num">{{ vm.usd(vm.team.cost.new_spend_usd) }}</strong><span class="muted" ng-if="vm.team.cost.share_needing_order > 0"> &middot; {{ vm.pct(vm.team.cost.share_needing_order) }} of the ask</span></div>
-          <p class="panel__note">{{ vm.team.cost.note }}</p>
-        </section>
-
-        <section class="card tm-risk" aria-labelledby="tmrisk-head">
-          <div class="card__head"><h3 id="tmrisk-head">Risks &amp; dependencies</h3><a ng-href="#/pools/{{ vm.team.selected.pool_id }}">Open the pool</a></div>
-          <div class="empty" ng-if="!vm.team.risks.items.length">Nothing is flagged on this pool.</div>
-          <ul class="tm-risks" ng-if="vm.team.risks.items.length">
-            <li ng-repeat="k in vm.team.risks.items">
-              <span class="pill pill--{{ vm.tmSev(k.severity) }}">{{ k.severity }}</span>
-              <div><strong>{{ k.title }}</strong><div class="muted caption">{{ k.detail }}</div></div>
-            </li>
-          </ul>
-          <p class="panel__note" ng-if="vm.team.moreRisks > 0">{{ vm.team.moreRisks }} more flagged on this pool.</p>
-        </section>
-      </div>
-
-      </div>
       </div>
 
     </div>

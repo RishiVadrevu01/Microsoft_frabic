@@ -148,6 +148,13 @@ function buildRequester(store, q = {}) {
   // Someone with a request at risk first, then whoever asks for the most.
   const orgList = [...orgs.values()].sort((x, y) => Number(y.at_risk > 0) - Number(x.at_risk > 0) || y.count - x.count || x.label.localeCompare(y.label));
   if (!orgList.length) throw new HttpError(404, 'There are no requests in this dataset.');
+
+  // If Coca-Cola is requested (or default in UI), serve Coca-Cola Analytics
+  const isCoke = q.org === 'coca-cola' || q.org === 'coca-cola-analytics' || String(q.request || '').startsWith('rq-');
+  if (isCoke) {
+    return buildCocaColaRequester(data, all, byPool, q, horizon, region, orgList);
+  }
+
   const orgKey = q.org ? String(q.org).toLowerCase() : orgList[0].key;
   if (!orgs.has(orgKey)) throw new HttpError(400, `org must be one of ${orgList.map((o) => o.key).join(', ')}.`);
   const mine = data.requests.filter((r) => orgKeyOf(r) === orgKey);
@@ -527,4 +534,776 @@ function buildOptions(p) {
   return rows.map((o) => ({ ...o, recommended: o.key === pick })).sort((x, y) => Number(y.recommended) - Number(x.recommended));
 }
 
+// ------------------------------------------------------------------ Coca-Cola Analytics requester dataset & builder
+const COCA_COLA_REQUESTS = [
+  {
+    request_id: 'rq-coca-cola-analytics',
+    title: 'Coca-Cola Analytics',
+    team: 'coca-cola-bi',
+    workload: 'analytics',
+    workload_label: 'Analytics (AI/ML)',
+    environment: 'Production',
+    region: 'East US',
+    geo: 'north-america',
+    sku_id: 'FAB-NVIDIA-H100',
+    pool_id: 'pool-eastus-01-nvidia-h100',
+    requested_cu: 8000,
+    additional_cu: 5000,
+    current_usage_cu: 3000,
+    allocated_cu: 8000,
+    need_by: '2026-11-12',
+    priority: 'critical',
+    priority_label: 'P0 – Critical',
+    status: 'at-risk',
+    status_label: 'Risk',
+    ai_recommended: 'Phase deployment',
+    revenue_at_risk_usd: 12000000,
+    customer_commitment: 'Q4 2026 launch',
+    sla_impact: 'High',
+    strategic_importance: 'Critical',
+    use_case: 'Customer onboarding, advanced analytics and ML model training.',
+    est_annual_cost_usd: 3700000,
+    cost_basis: '(for requested capacity)',
+    delta_month_pct: 0.12,
+    delta_quarter_pct: 0.28,
+    why: [
+      'Current utilization can be optimized by 15%',
+      'Alternative SKU (H200) available in 8 weeks',
+      'Demand growth is seasonal; phase deployment',
+      'Reduces overall cost by ~$280K'
+    ],
+    impact: [
+      'Meets business demand',
+      'Avoids 2.8 weeks of capacity exposure',
+      'Reduces cost by 18%',
+      'No change to product roadmap'
+    ],
+    next_steps: [
+      'Revise request to 7,000 CU (Phase 1: 3,000 CU)',
+      'Use H200 for initial deployment',
+      'Submit Phase 2 request for 4,000 CU by Jan 2027'
+    ],
+    headline: 'Reduce the request by 1,000 CU and phase the remaining 4,000 CU across two deployments Milestones.',
+    confidence_pct: 82,
+    timeline: [
+      { key: 'submitted', title: 'Request submitted', detail: '15 Sep 2026', state: 'done' },
+      { key: 'review', title: 'Under review', detail: 'Central Capacity Team 20 Sep 2026', state: 'current' },
+      { key: 'approval', title: 'Partial approval (3,000 CU)', detail: 'Available from 01 Oct 2026', state: 'info' },
+      { key: 'remaining', title: 'Remaining 5,000 CU', detail: 'At risk due to H100 constraint', state: 'risk' },
+      { key: 'expected', title: 'Expected availability', detail: 'Phase 1: 01 Oct 2026 (3,000 CU) · Phase 2: 15 Jan 2027 (4,000 CU)', state: 'future' }
+    ],
+    drivers: [
+      { label: 'Customer onboarding', share_pct: 40, cu: 3200 },
+      { label: 'Workload growth', share_pct: 28, cu: 2240 },
+      { label: 'New analytics workload', share_pct: 20, cu: 1600 },
+      { label: 'Seasonal demand', share_pct: 12, cu: 960 }
+    ],
+    alternatives: [
+      { option: 'H200 (Alternative SKU)', capacity_cu: 5000, lead: '8 Weeks', est_cost_usd: 1400000, impact: 'Meets demand' },
+      { option: 'Reallocate from West US', capacity_cu: 2000, lead: '2 Weeks', est_cost_usd: 200000, impact: 'Partial' },
+      { option: 'Hybrid (H200 + Reallocate)', capacity_cu: 5000, lead: '8 Weeks', est_cost_usd: 1200000, impact: 'Recommended', recommended: true },
+      { option: 'Phase deployment', capacity_cu: 3000, lead: '—', est_cost_usd: 800000, impact: 'Reduces Risk' },
+      { option: 'Defer non-critical workloads', capacity_cu: 2000, lead: '—', est_cost_usd: 500000, impact: 'Risk to roadmap', risk: true }
+    ],
+    cost_bars: [
+      { label: 'Current (3,000 CU)', cu: 3000, usd: 180000, display_cost: '$180K' },
+      { label: 'Phase 1 (3,000 CU)', cu: 3000, usd: 320000, display_cost: '$320K' },
+      { label: 'Phase 2 (5,000 CU)', cu: 5000, usd: 490000, display_cost: '$490K' }
+    ],
+    risks: [
+      { title: 'H100 constraint in East US', detail: 'May delay 5,000 CU by 12 weeks', severity: 'High' },
+      { title: 'Seasonal demand spike (Nov–Dec)', detail: '+40% expected utilization', severity: 'Medium' },
+      { title: 'Customer launch commitment', detail: 'Q4 2026 depends on Phase 1', severity: 'Medium' },
+      { title: 'Data pipeline dependency', detail: 'Requires additional storage capacity', severity: 'Low' }
+    ]
+  },
+  {
+    request_id: 'rq-customer-360',
+    title: 'Customer 360',
+    team: 'coca-cola-c360',
+    workload: 'analytics',
+    workload_label: 'Analytics (AI/ML)',
+    environment: 'Production',
+    region: 'North Europe',
+    geo: 'europe',
+    sku_id: 'FAB-INTEL-ICX',
+    pool_id: 'pool-northeurope-01-intel-icx',
+    requested_cu: 4000,
+    additional_cu: 2000,
+    current_usage_cu: 2000,
+    allocated_cu: 4000,
+    need_by: '2027-01-15',
+    priority: 'high',
+    priority_label: 'P1 – High',
+    status: 'in-review',
+    status_label: 'In Review',
+    ai_recommended: 'Optimize by 15%',
+    revenue_at_risk_usd: 5500000,
+    customer_commitment: 'Q1 2027 release',
+    sla_impact: 'Medium',
+    strategic_importance: 'High',
+    use_case: 'Global customer 360 unified profiles and predictive engagement.',
+    est_annual_cost_usd: 1800000,
+    cost_basis: '(for requested capacity)',
+    delta_month_pct: 0.08,
+    delta_quarter_pct: 0.16,
+    why: [
+      'Queries run with 22% cache redundancy',
+      'Batch indexing can run in off-peak windows',
+      'Pool headroom in West Europe available for spillover'
+    ],
+    impact: [
+      'Optimizes usage by 15%',
+      'Saves ~$180K annually',
+      'Keeps 100% of SLA performance'
+    ],
+    next_steps: [
+      'Enable materialized query caching',
+      'Shift aggregation pipeline to 02:00 UTC',
+      'Re-evaluate capacity need in 4 weeks'
+    ],
+    headline: 'Optimize memory caching and reschedule non-critical indexing to reduce requested capacity to 3,400 CU.',
+    confidence_pct: 88,
+    timeline: [
+      { key: 'submitted', title: 'Request submitted', detail: '22 Sep 2026', state: 'done' },
+      { key: 'review', title: 'Under review', detail: 'Central Capacity assessing buffer', state: 'current' },
+      { key: 'expected', title: 'Expected availability', detail: 'Full delivery target 15 Jan 2027', state: 'future' }
+    ],
+    drivers: [
+      { label: 'Profile aggregation', share_pct: 45, cu: 1800 },
+      { label: 'Real-time lookups', share_pct: 35, cu: 1400 },
+      { label: 'Batch sync', share_pct: 20, cu: 800 }
+    ],
+    alternatives: [
+      { option: 'Cache optimization', capacity_cu: 3400, lead: '2 Weeks', est_cost_usd: 400000, impact: 'Recommended', recommended: true },
+      { option: 'Split with West Europe', capacity_cu: 4000, lead: '3 Weeks', est_cost_usd: 600000, impact: 'Meets demand' }
+    ],
+    cost_bars: [
+      { label: 'Current (2,000 CU)', cu: 2000, usd: 120000, display_cost: '$120K' },
+      { label: 'Requested (4,000 CU)', cu: 4000, usd: 240000, display_cost: '$240K' }
+    ],
+    risks: [
+      { title: 'Cross-region network latency', detail: 'Replication between EU pools adds 15ms', severity: 'Medium' },
+      { title: 'Q1 marketing campaign volume', detail: '+25% burst expected in Feb', severity: 'Low' }
+    ]
+  },
+  {
+    request_id: 'rq-ai-search',
+    title: 'AI Search',
+    team: 'coca-cola-ai',
+    workload: 'ai-assist',
+    workload_label: 'AI Inference',
+    environment: 'Production',
+    region: 'West US',
+    geo: 'north-america',
+    sku_id: 'FAB-NVIDIA-H100',
+    pool_id: 'pool-westus-01-nvidia-h100',
+    requested_cu: 3000,
+    additional_cu: 1000,
+    current_usage_cu: 2000,
+    allocated_cu: 3000,
+    need_by: '2027-02-01',
+    priority: 'high',
+    priority_label: 'P1 – High',
+    status: 'approved',
+    status_label: 'Approved',
+    ai_recommended: 'Proceed as planned',
+    revenue_at_risk_usd: 3200000,
+    customer_commitment: 'Q1 2027 enterprise rollout',
+    sla_impact: 'High',
+    strategic_importance: 'High',
+    use_case: 'Vector search index serving and natural language query generation.',
+    est_annual_cost_usd: 1400000,
+    cost_basis: '(for approved allocation)',
+    delta_month_pct: 0.15,
+    delta_quarter_pct: 0.32,
+    why: [
+      'West US expansion order already in flight',
+      'Capacity reserved and scheduled for delivery Jan 20',
+      'Meets all latency and resilience criteria'
+    ],
+    impact: [
+      'Guarantees 99.95% query availability',
+      'Supports up to 10k QPS',
+      'No disruption to delivery schedule'
+    ],
+    next_steps: [
+      'Validate acceptance tests upon cluster provisioning',
+      'Begin canary rollout on Jan 25'
+    ],
+    headline: 'Proceed as planned: supply lands 10 days before need date.',
+    confidence_pct: 94,
+    timeline: [
+      { key: 'submitted', title: 'Request submitted', detail: '10 Sep 2026', state: 'done' },
+      { key: 'review', title: 'Approved', detail: 'Approved by Central Capacity on 24 Sep', state: 'done' },
+      { key: 'expected', title: 'Expected delivery', detail: 'Scheduled delivery 20 Jan 2027', state: 'future' }
+    ],
+    drivers: [
+      { label: 'Embedding generation', share_pct: 50, cu: 1500 },
+      { label: 'Vector retrieval', share_pct: 35, cu: 1050 },
+      { label: 'Model fine-tuning', share_pct: 15, cu: 450 }
+    ],
+    alternatives: [
+      { option: 'Proceed with planned H100', capacity_cu: 3000, lead: 'On track', est_cost_usd: 1400000, impact: 'Recommended', recommended: true }
+    ],
+    cost_bars: [
+      { label: 'Current (2,000 CU)', cu: 2000, usd: 140000, display_cost: '$140K' },
+      { label: 'Approved (3,000 CU)', cu: 3000, usd: 210000, display_cost: '$210K' }
+    ],
+    risks: [
+      { title: 'Vendor firmware update', detail: 'Requires driver qualification in staging', severity: 'Low' }
+    ]
+  },
+  {
+    request_id: 'rq-retail-insights',
+    title: 'Retail Insights',
+    team: 'coca-cola-retail',
+    workload: 'bi',
+    workload_label: 'Business Intelligence',
+    environment: 'Production',
+    region: 'Germany',
+    geo: 'europe',
+    sku_id: 'FAB-INTEL-ICX',
+    pool_id: 'pool-germanywestcentral-01-intel-icx',
+    requested_cu: 2500,
+    additional_cu: 500,
+    current_usage_cu: 2000,
+    allocated_cu: 2500,
+    need_by: '2026-12-20',
+    priority: 'medium',
+    priority_label: 'P2 – Medium',
+    status: 'in-review',
+    status_label: 'In Review',
+    ai_recommended: 'Use alternative SKU',
+    revenue_at_risk_usd: 2100000,
+    customer_commitment: 'Holiday peak retail tracking',
+    sla_impact: 'Medium',
+    strategic_importance: 'Medium',
+    use_case: 'POS store stream ingestion and real-time inventory alerting.',
+    est_annual_cost_usd: 900000,
+    cost_basis: '(for requested capacity)',
+    delta_month_pct: 0.05,
+    delta_quarter_pct: 0.14,
+    why: [
+      'Intel ICX in Germany is at 94% utilization',
+      'AMD Genoa pool in Frankfurt has 1,200 CU unreserved',
+      'Workload is compatible with Gen5 AMD compute'
+    ],
+    impact: [
+      'Eliminates wait time for hardware order',
+      'Lowers unit compute cost by 12%'
+    ],
+    next_steps: [
+      'Switch cluster provisioning template to AMD Genoa',
+      'Run validation benchmark'
+    ],
+    headline: 'Allocate 500 CU from AMD Genoa pool in Frankfurt to avoid procurement delay.',
+    confidence_pct: 91,
+    timeline: [
+      { key: 'submitted', title: 'Request submitted', detail: '18 Sep 2026', state: 'done' },
+      { key: 'review', title: 'Under review', detail: 'SKU alternative proposed', state: 'current' },
+      { key: 'expected', title: 'Expected delivery', detail: 'Immediate if AMD SKU accepted', state: 'future' }
+    ],
+    drivers: [
+      { label: 'POS ingestion', share_pct: 55, cu: 1375 },
+      { label: 'Daily store analytics', share_pct: 30, cu: 750 },
+      { label: 'Reporting dashboards', share_pct: 15, cu: 375 }
+    ],
+    alternatives: [
+      { option: 'Switch to AMD Genoa', capacity_cu: 2500, lead: 'Immediate', est_cost_usd: 790000, impact: 'Recommended', recommended: true },
+      { option: 'Wait for Intel ICX', capacity_cu: 2500, lead: '10 Weeks', est_cost_usd: 900000, impact: 'Late' }
+    ],
+    cost_bars: [
+      { label: 'Current (2,000 CU)', cu: 2000, usd: 90000, display_cost: '$90K' },
+      { label: 'Requested (2,500 CU)', cu: 2500, usd: 125000, display_cost: '$125K' }
+    ],
+    risks: [
+      { title: 'Holiday transaction surge', detail: '3x volume expected Dec 22-26', severity: 'Medium' }
+    ]
+  },
+  {
+    request_id: 'rq-marketing-platform',
+    title: 'Marketing Platform',
+    team: 'coca-cola-marketing',
+    workload: 'streaming',
+    workload_label: 'Streaming Analytics',
+    environment: 'Production',
+    region: 'Southeast Asia',
+    geo: 'asia-pacific',
+    sku_id: 'FAB-INTEL-ICX',
+    pool_id: 'pool-southeastasia-01-intel-icx',
+    requested_cu: 2000,
+    additional_cu: 1200,
+    current_usage_cu: 800,
+    allocated_cu: 2000,
+    need_by: '2027-01-10',
+    priority: 'high',
+    priority_label: 'P1 – High',
+    status: 'at-risk',
+    status_label: 'Risk',
+    ai_recommended: 'Reallocate 1,200 CU',
+    revenue_at_risk_usd: 1900000,
+    customer_commitment: 'APAC campaign launch',
+    sla_impact: 'High',
+    strategic_importance: 'High',
+    use_case: 'Omnichannel marketing attribution and behavioral clustering.',
+    est_annual_cost_usd: 850000,
+    cost_basis: '(for requested capacity)',
+    delta_month_pct: 0.18,
+    delta_quarter_pct: 0.35,
+    why: [
+      'Singapore datacenter lead time is 14 weeks',
+      'Australia East pool has 1,500 CU idle reservation',
+      'APAC latency within acceptable bounds (<40ms)'
+    ],
+    impact: [
+      'Secures 1,200 CU without waiting for shipment',
+      'Protects APAC campaign launch date'
+    ],
+    next_steps: [
+      'Request Central Capacity approve inter-region loan',
+      'Configure cross-region routing'
+    ],
+    headline: 'Reallocate 1,200 CU from idle Australia East reservation to meet Jan 10 need date.',
+    confidence_pct: 85,
+    timeline: [
+      { key: 'submitted', title: 'Request submitted', detail: '14 Sep 2026', state: 'done' },
+      { key: 'review', title: 'At risk', detail: 'Hardware arrival projected Feb 20 (6 weeks late)', state: 'risk' },
+      { key: 'expected', title: 'Expected delivery', detail: '05 Jan 2027 via Australia reallocation', state: 'future' }
+    ],
+    drivers: [
+      { label: 'Event streaming', share_pct: 60, cu: 1200 },
+      { label: 'Attribution pipelines', share_pct: 25, cu: 500 },
+      { label: 'User segmentation', share_pct: 15, cu: 300 }
+    ],
+    alternatives: [
+      { option: 'Reallocate from Australia East', capacity_cu: 1200, lead: '1 Week', est_cost_usd: 150000, impact: 'Recommended', recommended: true },
+      { option: 'Wait for new hardware', capacity_cu: 1200, lead: '14 Weeks', est_cost_usd: 850000, impact: 'Late', risk: true }
+    ],
+    cost_bars: [
+      { label: 'Current (800 CU)', cu: 800, usd: 40000, display_cost: '$40K' },
+      { label: 'Phase 1 Reallocated', cu: 1200, usd: 60000, display_cost: '$60K' }
+    ],
+    risks: [
+      { title: 'Submarine cable maintenance', detail: 'Possible route failover in Dec', severity: 'Medium' }
+    ]
+  },
+  {
+    request_id: 'rq-supply-chain-opt',
+    title: 'Supply Chain Opt',
+    team: 'coca-cola-supply',
+    workload: 'analytics',
+    workload_label: 'Analytics',
+    environment: 'Production',
+    region: 'East US',
+    geo: 'north-america',
+    sku_id: 'FAB-INTEL-ICX',
+    pool_id: 'pool-eastus-01-intel-icx',
+    requested_cu: 1500,
+    additional_cu: 0,
+    current_usage_cu: 1500,
+    allocated_cu: 1500,
+    need_by: '2026-08-01',
+    priority: 'medium',
+    priority_label: 'P2 – Medium',
+    status: 'completed',
+    status_label: 'Completed',
+    ai_recommended: 'Delivered',
+    revenue_at_risk_usd: 0,
+    customer_commitment: 'Delivered on 01 Aug 2026',
+    sla_impact: 'Low',
+    strategic_importance: 'Medium',
+    use_case: 'Route planning and distribution network optimization.',
+    est_annual_cost_usd: 500000,
+    cost_basis: '(fully deployed)',
+    delta_month_pct: 0.02,
+    delta_quarter_pct: 0.05,
+    why: ['Delivered and live in production.'],
+    impact: ['Operating within allocated envelope.'],
+    next_steps: ['Continue standard operational monitoring.'],
+    headline: 'Delivered 01 Aug 2026: 1,500 CU in East US.',
+    confidence_pct: 99,
+    timeline: [
+      { key: 'submitted', title: 'Request submitted', detail: '10 Jun 2026', state: 'done' },
+      { key: 'delivered', title: 'Delivered', detail: '1,500 CU on 01 Aug 2026', state: 'done' }
+    ],
+    drivers: [
+      { label: 'Route optimization', share_pct: 70, cu: 1050 },
+      { label: 'Telemetry ingestion', share_pct: 30, cu: 450 }
+    ],
+    alternatives: [],
+    cost_bars: [
+      { label: 'Current (1,500 CU)', cu: 1500, usd: 75000, display_cost: '$75K' }
+    ],
+    risks: []
+  },
+  {
+    request_id: 'rq-inventory-forecaster',
+    title: 'Inventory Forecaster',
+    team: 'coca-cola-inv',
+    workload: 'analytics',
+    workload_label: 'Analytics',
+    environment: 'Production',
+    region: 'Central US',
+    geo: 'north-america',
+    sku_id: 'FAB-INTEL-ICX',
+    pool_id: 'pool-centralus-01-intel-icx',
+    requested_cu: 2200,
+    additional_cu: 0,
+    current_usage_cu: 2200,
+    allocated_cu: 2200,
+    need_by: '2026-09-15',
+    priority: 'medium',
+    priority_label: 'P2 – Medium',
+    status: 'approved',
+    status_label: 'Approved',
+    ai_recommended: 'Proceed as planned',
+    revenue_at_risk_usd: 1500000,
+    customer_commitment: 'Fall inventory rollout',
+    sla_impact: 'Medium',
+    strategic_importance: 'Medium',
+    use_case: 'Demand forecasting across regional distribution hubs.',
+    est_annual_cost_usd: 750000,
+    cost_basis: '(for approved allocation)',
+    delta_month_pct: 0.04,
+    delta_quarter_pct: 0.10,
+    why: ['Capacity provisioned from regional buffer.'],
+    impact: ['Meets all SLA requirements.'],
+    next_steps: ['Initiate workload onboarding.'],
+    headline: 'Approved: 2,200 CU in Central US is ready for deployment.',
+    confidence_pct: 96,
+    timeline: [
+      { key: 'submitted', title: 'Request submitted', detail: '01 Aug 2026', state: 'done' },
+      { key: 'approved', title: 'Approved', detail: 'Approved on 15 Aug 2026', state: 'done' }
+    ],
+    drivers: [
+      { label: 'Hub analytics', share_pct: 80, cu: 1760 },
+      { label: 'Store lookups', share_pct: 20, cu: 440 }
+    ],
+    alternatives: [],
+    cost_bars: [
+      { label: 'Current (2,200 CU)', cu: 2200, usd: 110000, display_cost: '$110K' }
+    ],
+    risks: []
+  },
+  {
+    request_id: 'rq-pricing-engine',
+    title: 'Pricing Engine',
+    team: 'coca-cola-pricing',
+    workload: 'ai-assist',
+    workload_label: 'AI Inference',
+    environment: 'Production',
+    region: 'UK South',
+    geo: 'europe',
+    sku_id: 'FAB-NVIDIA-A100',
+    pool_id: 'pool-uksouth-01-nvidia-a100',
+    requested_cu: 1800,
+    additional_cu: 400,
+    current_usage_cu: 1400,
+    allocated_cu: 1800,
+    need_by: '2027-02-28',
+    priority: 'medium',
+    priority_label: 'P2 – Medium',
+    status: 'in-review',
+    status_label: 'In Review',
+    ai_recommended: 'Phase deployment',
+    revenue_at_risk_usd: 1100000,
+    customer_commitment: 'Q1 pricing matrix',
+    sla_impact: 'Medium',
+    strategic_importance: 'Medium',
+    use_case: 'Dynamic pricing models and competitive price sensitivity indexing.',
+    est_annual_cost_usd: 620000,
+    cost_basis: '(for requested capacity)',
+    delta_month_pct: 0.06,
+    delta_quarter_pct: 0.12,
+    why: ['Initial models can run on existing A100 pool with quantization.'],
+    impact: ['Phased delivery meets Feb release target.'],
+    next_steps: ['Deploy INT8 quantized model.'],
+    headline: 'Phase deployment: 1,400 CU now, 400 CU upon pool expansion.',
+    confidence_pct: 89,
+    timeline: [
+      { key: 'submitted', title: 'Request submitted', detail: '05 Sep 2026', state: 'done' },
+      { key: 'review', title: 'Under review', detail: 'Quantization testing underway', state: 'current' }
+    ],
+    drivers: [
+      { label: 'Price sensitivity models', share_pct: 65, cu: 1170 },
+      { label: 'Competitor data crawl', share_pct: 35, cu: 630 }
+    ],
+    alternatives: [
+      { option: 'Quantized INT8 inference', capacity_cu: 1400, lead: 'Immediate', est_cost_usd: 0, impact: 'Recommended', recommended: true }
+    ],
+    cost_bars: [
+      { label: 'Current (1,400 CU)', cu: 1400, usd: 70000, display_cost: '$70K' },
+      { label: 'Expansion (400 CU)', cu: 400, usd: 25000, display_cost: '$25K' }
+    ],
+    risks: []
+  }
+];
+
+function buildCocaColaRequester(data, all, byPool, q, horizon, region, orgList) {
+  const asOf = data.as_of;
+  const allRows = COCA_COLA_REQUESTS.map((r) => ({
+    request_id: r.request_id,
+    title: r.title,
+    team: r.team,
+    workload: r.workload,
+    workload_label: r.workload_label,
+    pool_id: r.pool_id,
+    region: r.region,
+    geo: r.geo,
+    sku_id: r.sku_id,
+    requested_cu: r.requested_cu,
+    additional_cu: r.additional_cu,
+    need_by: r.need_by,
+    status: r.status,
+    status_label: r.status_label,
+    recommended: { kind: 'action', label: r.ai_recommended },
+    priority: r.priority,
+    submitted_on: r.timeline && r.timeline[0] ? r.timeline[0].detail : null
+  }));
+
+  const rows = allRows.filter((row) => region === 'all' || row.geo === region);
+  const count = (s) => rows.filter((row) => row.status === s).length;
+  const counts = {
+    all: rows.length,
+    at_risk: count('at-risk'),
+    in_review: count('in-review'),
+    approved: count('approved'),
+    live: 0,
+    completed: count('completed'),
+    declined: 0,
+    lapsed: 0
+  };
+
+  let selected = q.request ? COCA_COLA_REQUESTS.find((r) => r.request_id === q.request) : null;
+  if (!selected) {
+    const first = rows[0] || allRows[0];
+    selected = first ? COCA_COLA_REQUESTS.find((r) => r.request_id === first.request_id) : COCA_COLA_REQUESTS[0];
+  }
+
+  const months = horizon === 13 ? 3 : horizon === 26 ? 6 : 12;
+  const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthDates = ['2026-01-01', '2026-02-01', '2026-03-01', '2026-04-01', '2026-05-01', '2026-06-01', '2026-07-01', '2026-08-01', '2026-09-01', '2026-10-01', '2026-11-01', '2026-12-01'];
+
+  // Base profile scaled to selected request
+  const reqCu = selected.requested_cu;
+  const useCu = selected.current_usage_cu;
+  const addCu = selected.additional_cu;
+
+  const points = [];
+  for (let i = 0; i <= months; i++) {
+    const mIdx = Math.min(11, i);
+    const growth = i / Math.max(1, months);
+    const dVal = Math.round(useCu * 0.8 + (reqCu - useCu * 0.8) * Math.pow(growth, 0.85));
+    const uVal = Math.round(useCu * (0.65 + 0.35 * growth));
+    points.push({
+      month: i,
+      month_label: monthLabels[mIdx],
+      date: monthDates[mIdx],
+      week: Math.round((i * horizon) / months),
+      demand: dVal,
+      usage: uVal,
+      capacity: useCu,
+      requested: Math.round(reqCu * 0.75)
+    });
+  }
+
+  const weekly = [];
+  for (let w = 0; w <= horizon; w++) {
+    const frac = w / Math.max(1, horizon);
+    const dVal = Math.round(useCu * 0.8 + (reqCu - useCu * 0.8) * Math.pow(frac, 0.85));
+    const uVal = Math.round(useCu * (0.65 + 0.35 * frac));
+    weekly.push({
+      week: w,
+      date: addWeeks(asOf, w),
+      demand: dVal,
+      usage: uVal,
+      capacity: useCu,
+      requested: Math.round(reqCu * 0.75)
+    });
+  }
+
+  const callout = selected.additional_cu > 0 ? {
+    date: selected.need_by,
+    week: Math.round(horizon * 0.88),
+    month_idx: 10,
+    cu: selected.additional_cu,
+    text: `Need additional capacity by ${fmt(selected.need_by)} (${cu(selected.additional_cu)})`,
+    lands_on: '2027-01-15'
+  } : null;
+
+  const kpis = {
+    current_usage: {
+      cu: selected.current_usage_cu,
+      allocated_cu: selected.allocated_cu,
+      share_of_allocated: selected.allocated_cu > 0 ? selected.current_usage_cu / selected.allocated_cu : null,
+      delta_pct: selected.delta_month_pct || 0.12,
+      delta_label: 'vs last month',
+      holds_capacity_here: true,
+      definition: `Current compute units utilized by ${selected.team} in ${selected.region}.`
+    },
+    total_demand: {
+      cu: selected.requested_cu,
+      delta_pct: selected.delta_quarter_pct || 0.28,
+      delta_label: 'vs last quarter',
+      definition: 'Projected 12-month demand growth based on pipeline and onboarding models.'
+    },
+    additional_required: {
+      cu: selected.additional_cu,
+      by: selected.need_by,
+      of_cu: selected.requested_cu,
+      has_need: selected.additional_cu > 0,
+      definition: 'Additional capacity required beyond current allocated reservation to meet need-by date.'
+    },
+    request_status: {
+      key: selected.status,
+      label: selected.status === 'at-risk' ? 'At Risk' : selected.status === 'in-review' ? 'In Review' : selected.status === 'approved' ? 'Approved' : 'Completed',
+      note: selected.status === 'at-risk' ? 'Needs action' : selected.status === 'in-review' ? 'Waiting for a decision' : selected.status === 'approved' ? 'Approved' : 'Delivered',
+      definition: 'At risk when the part of the ask that needs a new order would arrive after the need date.'
+    },
+    business_impact: {
+      usd: selected.revenue_at_risk_usd,
+      label: selected.status === 'at-risk' ? 'Revenue at risk' : 'Revenue this request supports',
+      definition: 'As stated by the requester on the request.'
+    },
+    est_cost: {
+      usd: selected.est_annual_cost_usd,
+      basis: selected.cost_basis || '(for requested capacity)',
+      definition: 'Estimated annual commitment for requested capacity expansion.'
+    }
+  };
+
+  const recommendation = {
+    state: selected.status,
+    label: selected.status === 'at-risk' ? 'At Risk' : selected.status === 'in-review' ? 'In Review' : selected.status === 'approved' ? 'Approved' : 'Completed',
+    confidence_pct: selected.confidence_pct || 82,
+    headline: selected.headline,
+    why: selected.why || [],
+    impact: selected.impact || [],
+    next_steps: selected.next_steps || [],
+    basis: 'Rules over this pool\'s plan and its request queue. Powered by AI Capacity Intelligence.'
+  };
+
+  const details = {
+    rows: [
+      { key: 'environment', label: 'Environment', value: selected.environment || 'Production' },
+      { key: 'region', label: 'Region', value: selected.region },
+      { key: 'workload', label: 'Workload type', value: selected.workload_label || 'Analytics (AI/ML)' },
+      { key: 'requested', label: 'Requested capacity', value: `${cu(selected.requested_cu)} CU` },
+      { key: 'additional', label: 'Additional required', value: `${cu(selected.additional_cu)} CU`, emphasis: selected.additional_cu > 0 ? 'bad' : null },
+      { key: 'need_by', label: 'Need by', value: fmt(selected.need_by) },
+      { key: 'priority', label: 'Business priority', value: selected.priority_label || cap(selected.priority), emphasis: selected.priority === 'critical' || selected.priority === 'high' ? 'bad' : null },
+      { key: 'source', label: 'Request source', value: 'Sales pipeline' }
+    ],
+    use_case: selected.use_case,
+    team: selected.team,
+    request_id: selected.request_id,
+    title: selected.title,
+    pool_id: selected.pool_id,
+    pool_label: `${selected.region} · ${selected.sku_id}`,
+    workload_label: selected.workload_label || 'Analytics (AI/ML)',
+    priority_label: selected.priority_label || cap(selected.priority)
+  };
+
+  const business_impact = {
+    revenue: selected.revenue_at_risk_usd ? `$${(selected.revenue_at_risk_usd / 1000000).toFixed(1)}M` : '—',
+    commitment: selected.customer_commitment || 'Not stated',
+    sla: selected.sla_impact || 'High',
+    strategic: selected.strategic_importance || 'Critical',
+    rows: [
+      { key: 'revenue', label: selected.status === 'at-risk' ? 'Revenue at risk' : 'Revenue supported', value: selected.revenue_at_risk_usd ? `$${(selected.revenue_at_risk_usd / 1000000).toFixed(1)}M` : '—' },
+      { key: 'commitment', label: 'Customer commitment', value: selected.customer_commitment || 'Not stated' },
+      { key: 'sla', label: 'SLA Impact', value: selected.sla_impact || 'High' },
+      { key: 'strategic', label: 'Strategic importance', value: selected.strategic_importance || 'Critical' }
+    ]
+  };
+
+  const utilization = {
+    used_cu: selected.current_usage_cu,
+    allocated_cu: selected.allocated_cu,
+    available_cu: Math.max(0, selected.allocated_cu - selected.current_usage_cu),
+    unused_cu: Math.max(0, selected.allocated_cu - selected.current_usage_cu),
+    used_share: selected.allocated_cu > 0 ? selected.current_usage_cu / selected.allocated_cu : 0,
+    available_share: selected.allocated_cu > 0 ? Math.max(0, selected.allocated_cu - selected.current_usage_cu) / selected.allocated_cu : 0,
+    holds_capacity_here: true,
+    pool: { region: selected.region, sku_id: selected.sku_id, free_cu: 5000 },
+    elsewhere: []
+  };
+
+  const cost = {
+    bars: (selected.cost_bars || []).map((b) => ({
+      ...b,
+      pct: Math.min(100, Math.round((b.usd / 500000) * 100))
+    })),
+    new_spend_usd: selected.est_annual_cost_usd,
+    annual_cost_usd: selected.est_annual_cost_usd,
+    annual_cost_delta_pct: 0.18,
+    note: '▲ 18% vs original request'
+  };
+
+  const regionOptions = [
+    { key: 'all', label: 'All regions' },
+    { key: 'north-america', label: 'North America' },
+    { key: 'europe', label: 'Europe' },
+    { key: 'asia-pacific', label: 'Asia Pacific' }
+  ];
+
+  return {
+    as_of: asOf,
+    view: 'requester',
+    source: 'synthetic',
+    filters: {
+      org: 'coca-cola',
+      request: selected.request_id,
+      region,
+      horizon,
+      options: {
+        orgs: [
+          { key: 'coca-cola', label: 'Coca-Cola Analytics', requests: 8, at_risk: 2 },
+          ...orgList
+        ],
+        requests: allRows.map((row) => ({ request_id: row.request_id, title: row.title, status: row.status, region: row.region })),
+        regions: regionOptions,
+        horizons: HORIZONS.map((w) => ({ weeks: w, label: `${(w / 13) * 3} months` }))
+      }
+    },
+    requester: { key: 'coca-cola', label: 'Coca-Cola Analytics', requests: 8 },
+    requests: {
+      counts,
+      rows,
+      definition: 'At risk: the part of the request that needs a new order would arrive after it is needed. In review: waiting for a decision and on track.'
+    },
+    selected: {
+      request_id: selected.request_id,
+      title: selected.title,
+      team: selected.team,
+      status: selected.status,
+      pool_id: selected.pool_id,
+      region: selected.region,
+      requested_cu: selected.requested_cu,
+      additional_cu: selected.additional_cu,
+      need_by: selected.need_by
+    },
+    kpis,
+    recommendation,
+    forecast: {
+      months,
+      horizon_weeks: horizon,
+      points,
+      weekly,
+      callout,
+      definition: 'Forecast demand is the team\'s usage grown at the pool\'s forecast, with the ask added from its need date. Current usage grows at the baseline rate.'
+    },
+    timeline: selected.timeline,
+    details,
+    drivers: selected.drivers || [],
+    business_impact,
+    utilization,
+    options: selected.alternatives || [],
+    cost,
+    risks: { total: (selected.risks || []).length, items: selected.risks || [] }
+  };
+}
+
 module.exports = { buildRequester, orgKeyOf, orgLabelOf, HORIZONS, GEO_LABEL, label, WORKLOAD, phasesOf, classify };
+

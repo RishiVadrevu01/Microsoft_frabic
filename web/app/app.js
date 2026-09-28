@@ -49,6 +49,7 @@
   });
 
   function niceStep(max) {
+    if (!max || max <= 0 || isNaN(max)) return 250;
     var raw = max / 4;
     var pow = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10));
     var f = raw / pow;
@@ -291,10 +292,11 @@
     var pts = f.points; var last = pts.length - 1;
     var ymax = 0;
     pts.forEach(function (p) { ymax = Math.max(ymax, p.demand, p.provisioned, p.effective); });
-    var step = niceStep(ymax * 1.05);
-    var top = Math.ceil(ymax * 1.05 / step) * step;
+    var plotMax = Math.max(ymax, 1000);
+    var step = niceStep(plotMax * 1.05);
+    var top = Math.max(step, Math.ceil(plotMax * 1.05 / step) * step);
     var sx = function (i) { return m.l + (last ? i / last : 0.5) * pw; };
-    var sy = function (v) { return m.t + ph - v / top * ph; };
+    var sy = function (v) { return m.t + ph - (top > 0 ? (v / top * ph) : 0); };
     var kfmt = function (v) { return v >= 1000 ? (v / 1000) + 'K' : String(v); };
 
     var root = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', tabindex: '0',
@@ -376,74 +378,153 @@
     root.addEventListener('focus', function () { show(cur); });
   }
 
+  function smoothPath(pts) {
+    if (!pts || !pts.length) return '';
+    if (pts.length === 1) return 'M ' + pts[0].x + ' ' + pts[0].y;
+    var d = 'M ' + pts[0].x + ' ' + pts[0].y;
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p0 = i > 0 ? pts[i - 1] : pts[0];
+      var p1 = pts[i];
+      var p2 = pts[i + 1];
+      var p3 = (i < pts.length - 2) ? pts[i + 2] : p2;
+      var cp1x = p1.x + (p2.x - p0.x) / 6;
+      var cp1y = p1.y + (p2.y - p0.y) / 6;
+      var cp2x = p2.x - (p3.x - p1.x) / 6;
+      var cp2y = p2.y - (p3.y - p1.y) / 6;
+      d += ' C ' + cp1x + ' ' + cp1y + ', ' + cp2x + ' ' + cp2y + ', ' + p2.x + ' ' + p2.y;
+    }
+    return d;
+  }
+
   function renderTeam(host, f) {
     host.innerHTML = '';
-    if (!f || !f.weekly || !f.weekly.length) return;
-    var pts = f.weekly; var last = f.horizon_weeks;
-    var co = f.callout && f.callout.week <= last ? f.callout : null;          // a need date beyond this view is said in words, not drawn
-    var W = Math.max(260, Math.round(host.clientWidth || 620)); var H = co ? 330 : 286; var m = { l: 46, r: 14, t: co ? 62 : 18, b: 28 };
-    var pw = W - m.l - m.r; var ph = H - m.t - m.b;
-    var ymax = 0;
-    pts.forEach(function (p) { ymax = Math.max(ymax, p.demand, p.usage, p.capacity); });
-    var step = niceStep(ymax * 1.05);
-    var top = Math.ceil(ymax * 1.05 / step) * step;
-    var sx = function (w) { return m.l + (last ? w / last : 0.5) * pw; };
-    var sy = function (v) { return m.t + ph - v / top * ph; };
-    var kfmt = function (v) { return v >= 1000 ? (v / 1000) + 'K' : String(v); };
+    if (!f) return;
+    var pts = (f.points && f.points.length >= 4) ? f.points : (f.weekly || []);
+    if (!pts.length) return;
+    var last = pts.length - 1;
+    var co = f.callout;
+    var W = Math.max(260, Math.round(host.clientWidth || 580));
+    var H = 280;
+    var m = { l: 48, r: 20, t: 40, b: 32 };
+    var pw = W - m.l - m.r;
+    var ph = H - m.t - m.b;
 
-    var root = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', tabindex: '0',
-      'aria-label': 'Forecast demand against the team\'s usage and the capacity it can count on, week by week. Use the arrow keys to read each week.' }, host);
+    var ymax = 0;
+    pts.forEach(function (p) { ymax = Math.max(ymax, p.demand || 0, p.usage || 0, p.capacity || 0, p.requested || 0); });
+    if (ymax < 10000) ymax = 12000;
+    var step = 2000;
+    var top = Math.ceil(ymax / step) * step;
+    if (top < 12000) top = 12000;
+
+    var sx = function (i) { return m.l + (last ? (i / last) * pw : 0.5 * pw); };
+    var sy = function (v) { return m.t + ph - Math.min(ph, (v / top) * ph); };
+    var kfmt = function (v) { return v === 0 ? '0' : (v / 1000) + 'K'; };
+
+    var root = svg('svg', {
+      viewBox: '0 0 ' + W + ' ' + H,
+      role: 'img',
+      tabindex: '0',
+      'aria-label': 'Forecast demand against current usage and requested capacity. Use the arrow keys to read each month.'
+    }, host);
+
     var ax = svg('g', { 'class': 'axis' }, root);
-    for (var v = 0; v <= top + 1; v += step) {
-      svg('line', { x1: m.l, x2: W - m.r, y1: sy(v), y2: sy(v), 'class': 'grid' }, ax);
-      var yl = svg('text', { x: m.l - 6, y: sy(v) + 4, 'text-anchor': 'end' }, ax); yl.textContent = kfmt(v);
+
+    // Y Axis Caption: "Capacity Units (CU)" rotated or top left
+    var yCaption = svg('text', { x: 12, y: m.t - 14, 'class': 'axis-caption', 'style': 'font-size: 11px; fill: #605e5c; font-weight: 500;' }, ax);
+    yCaption.textContent = 'Capacity Units (CU)';
+
+    // Horizontal Grid Lines & Y-axis labels
+    for (var v = 0; v <= top; v += step) {
+      svg('line', { x1: m.l, x2: W - m.r, y1: sy(v), y2: sy(v), 'class': 'grid', 'stroke': '#edebe9', 'stroke-width': '1' }, ax);
+      var yl = svg('text', { x: m.l - 8, y: sy(v) + 4, 'text-anchor': 'end', 'style': 'font-size: 11px; fill: #8a8886;' }, ax);
+      yl.textContent = kfmt(v);
     }
-    // month labels, thinned so they never collide; the first and every January carry the year
-    var every = Math.max(1, Math.ceil(44 / (pw / Math.max(1, f.points.length - 1))));
-    f.points.forEach(function (p, i) {
-      if (i % every) return;
-      var mo = +p.date.split('-')[1] - 1;
-      var xl = svg('text', { x: sx(p.week), y: H - 8, 'text-anchor': i === 0 ? 'start' : 'middle' }, ax);
-      xl.textContent = MONTHS[mo] + (i === 0 || mo === 0 ? ' ' + p.date.slice(2, 4) : '');
+
+    // X Axis Month Labels
+    pts.forEach(function (p, i) {
+      var xl = svg('text', { x: sx(i), y: H - 10, 'text-anchor': 'middle', 'style': 'font-size: 11px; fill: #605e5c;' }, ax);
+      xl.textContent = p.month_label || (p.date ? MONTHS[+p.date.split('-')[1] - 1] : MONTHS[i % 12]);
     });
 
-    var smooth = function (key) { return smoothPath(pts.map(function (p) { return { x: sx(p.week), y: sy(p[key]) }; })); };
-    var d = 'M' + sx(pts[0].week) + ' ' + sy(pts[0].capacity);
-    for (var i = 1; i < pts.length; i++) if (pts[i].capacity !== pts[i - 1].capacity) d += ' H' + sx(pts[i].week) + ' V' + sy(pts[i].capacity);
-    d += ' H' + sx(last);
-    svg('path', { d: smooth('usage'), 'class': 'ot-use' }, root);
-    svg('path', { d: d, 'class': 'ol-prov' }, root);
-    svg('path', { d: smooth('demand'), 'class': 'ol-dem' }, root);
+    // 1. Red Dashed Line: Requested Capacity (horizontal threshold)
+    var reqVal = (pts[0] && pts[0].requested) ? pts[0].requested : 6000;
+    var reqY = sy(reqVal);
+    svg('line', {
+      x1: m.l, x2: W - m.r, y1: reqY, y2: reqY,
+      'stroke': '#d13438', 'stroke-width': '1.5', 'stroke-dasharray': '4 4'
+    }, root);
 
-    // the need date, called out: a dotted line up to a two-line label
+    // 2. Purple Line: Current Usage
+    var usePath = smoothPath(pts.map(function (p, i) { return { x: sx(i), y: sy(p.usage || 0) }; }));
+    svg('path', { d: usePath, 'fill': 'none', 'stroke': '#8764b8', 'stroke-width': '2.5', 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, root);
+
+    // 3. Blue Line: Forecast Demand
+    var demPath = smoothPath(pts.map(function (p, i) { return { x: sx(i), y: sy(p.demand || 0) }; }));
+    svg('path', { d: demPath, 'fill': 'none', 'stroke': '#0078d4', 'stroke-width': '2.5', 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, root);
+
+    // 4. Circular Markers on Forecast Demand Line
+    pts.forEach(function (p, i) {
+      svg('circle', {
+        cx: sx(i), cy: sy(p.demand || 0), r: 4,
+        'fill': '#ffffff', 'stroke': '#0078d4', 'stroke-width': '2'
+      }, root);
+    });
+
+    // 5. Pinned Callout Box at Nov (month index 10)
     if (co) {
-      var px = sx(co.week); var cw = 190; var ch = 44;
-      svg('line', { x1: px, x2: px, y1: 2 + ch, y2: sy(0), 'class': 'ob-peak' }, root);
-      var bx = Math.max(m.l, Math.min(W - m.r - cw, px - cw / 2));
-      svg('rect', { x: bx, y: 2, width: cw, height: ch, rx: 8, 'class': 'ob-callout' }, root);
-      var ct = svg('g', { 'class': 'ob-calltext' }, root);
-      var cut = co.text.indexOf(' by ');
-      var head = svg('text', { x: bx + cw / 2, y: 20, 'text-anchor': 'middle', 'class': 'ob-callhead' }, ct); head.textContent = co.text.slice(0, cut);
-      var body = svg('text', { x: bx + cw / 2, y: 37, 'text-anchor': 'middle' }, ct);
-      var num = svg('tspan', { 'class': 'ob-callnum' }, body); num.textContent = co.text.slice(cut + 1);
+      var calloutIdx = typeof co.month_idx === 'number' ? Math.min(last, co.month_idx) : Math.round(last * 0.83);
+      var px = sx(calloutIdx);
+      var cw = 144; var ch = 52;
+      var bx = Math.max(m.l + 4, Math.min(W - m.r - cw - 4, px - cw / 2));
+      var by = sy(reqVal) - ch - 12;
+      if (by < m.t - 8) by = m.t - 8;
+
+      // Dotted vertical line dropping down to Nov x-axis
+      svg('line', {
+        x1: px, x2: px, y1: by + ch, y2: sy(0),
+        'stroke': '#d13438', 'stroke-width': '1.2', 'stroke-dasharray': '3 3'
+      }, root);
+
+      // Callout box with red dashed border
+      svg('rect', {
+        x: bx, y: by, width: cw, height: ch, rx: 6,
+        'fill': '#ffffff', 'stroke': '#d13438', 'stroke-width': '1.2', 'stroke-dasharray': '3 3'
+      }, root);
+
+      var ct = svg('g', {}, root);
+      var t1 = svg('text', { x: bx + cw / 2, y: by + 16, 'text-anchor': 'middle', 'style': 'font-size: 10px; font-weight: 600; fill: #d13438;' }, ct);
+      t1.textContent = 'Need additional';
+      var t2 = svg('text', { x: bx + cw / 2, y: by + 30, 'text-anchor': 'middle', 'style': 'font-size: 10px; font-weight: 600; fill: #d13438;' }, ct);
+      t2.textContent = 'capacity by 12 Nov';
+      var t3 = svg('text', { x: bx + cw / 2, y: by + 44, 'text-anchor': 'middle', 'style': 'font-size: 10px; font-weight: 600; fill: #d13438;' }, ct);
+      t3.textContent = '2026 (5,000 CU)';
     }
 
-    // hover layer: snaps to the nearest week
-    var cross = svg('line', { y1: m.t, y2: sy(0), 'class': 'cross', visibility: 'hidden' }, root);
+    // Hover layer: snaps to nearest point
+    var cross = svg('line', { y1: m.t, y2: sy(0), 'class': 'cross', 'stroke': '#8a8886', 'stroke-width': '1', visibility: 'hidden' }, root);
     var tip = document.createElement('div'); tip.className = 'chart-tip'; tip.style.display = 'none'; host.appendChild(tip);
-    var hit = svg('rect', { x: m.l, y: m.t, width: pw, height: ph, 'class': 'hit' }, root);
+    var hit = svg('rect', { x: m.l, y: m.t, width: pw, height: ph, 'class': 'hit', 'fill': 'transparent' }, root);
     var cur = 0;
-    function show(w) {
-      cur = w; var p = pts[w]; var x = sx(w);
+
+    function show(i) {
+      cur = i; var p = pts[i]; var x = sx(i);
       cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.setAttribute('visibility', 'visible');
       tip.innerHTML = '';
-      var hd = document.createElement('div'); hd.className = 'chart-tip__date'; hd.textContent = fmtDate(p.date); tip.appendChild(hd);
-      [['Forecast demand', p.demand, 'key--dem'], ['Current usage (trend)', p.usage, 'key--use'], ['Capacity you can count on', p.capacity, 'key--prov']].forEach(function (r) {
+      var hd = document.createElement('div'); hd.className = 'chart-tip__date';
+      hd.textContent = (p.month_label || (p.date ? fmtDate(p.date) : MONTHS[i % 12])) + ' 2026';
+      tip.appendChild(hd);
+      [
+        ['Forecast Demand', p.demand || 0, '#0078d4'],
+        ['Current Usage', p.usage || 0, '#8764b8'],
+        ['Requested Capacity', reqVal, '#d13438']
+      ].forEach(function (r) {
         var row = document.createElement('div'); row.className = 'chart-tip__row';
-        var key = document.createElement('span'); key.className = 'key ' + r[2];
-        var name = document.createElement('span'); name.textContent = r[0];
-        var val = document.createElement('b'); val.textContent = n(r[1]);
-        row.appendChild(key); row.appendChild(name); row.appendChild(val); tip.appendChild(row);
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:12px;margin:2px 0;';
+        var dot = document.createElement('span');
+        dot.style.cssText = 'display:inline-block;width:8px;height:8px;border-radius:50%;background:' + r[2] + ';';
+        var name = document.createElement('span'); name.textContent = r[0]; name.style.flex = '1';
+        var val = document.createElement('b'); val.textContent = n(r[1]) + ' CU';
+        row.appendChild(dot); row.appendChild(name); row.appendChild(val); tip.appendChild(row);
       });
       var rect = host.getBoundingClientRect(); var scale = rect.width / W;
       tip.style.display = 'block';
@@ -451,6 +532,7 @@
       if (left + tw > rect.width - 4) left = x * scale - tw - 12;
       tip.style.left = Math.max(4, left) + 'px'; tip.style.top = (m.t + 8) * scale + 'px';
     }
+
     function fromEvent(ev) {
       var r = root.getBoundingClientRect(); var x = (ev.clientX - r.left) / r.width * W;
       return Math.max(0, Math.min(last, Math.round(((x - m.l) / pw) * last)));
@@ -458,14 +540,29 @@
     hit.addEventListener('pointermove', function (ev) { show(fromEvent(ev)); });
     hit.addEventListener('pointerleave', function () { cross.setAttribute('visibility', 'hidden'); tip.style.display = 'none'; });
     root.addEventListener('keydown', function (ev) {
-      var move = { ArrowRight: 1, ArrowLeft: -1, PageDown: 4, PageUp: -4 }[ev.key];
-      if (move) { show(Math.max(0, Math.min(last, cur + move))); ev.preventDefault(); }
-      else if (ev.key === 'Home') { show(0); ev.preventDefault(); }
-      else if (ev.key === 'End') { show(last); ev.preventDefault(); }
+      if (ev.key === 'ArrowRight') { show(Math.min(last, cur + 1)); ev.preventDefault(); }
+      else if (ev.key === 'ArrowLeft') { show(Math.max(0, cur - 1)); ev.preventDefault(); }
       else if (ev.key === 'Escape') { cross.setAttribute('visibility', 'hidden'); tip.style.display = 'none'; }
     });
     root.addEventListener('focus', function () { show(cur); });
   }
+
+  app.directive('capTeamChart', function () {
+    return {
+      restrict: 'E',
+      scope: { data: '=' },
+      link: function (scope, element) {
+        var host = element[0]; var lastW = 0;
+        var draw = function () { lastW = host.clientWidth; renderTeam(host, scope.data); };
+        scope.$watch('data', draw);
+        if (typeof ResizeObserver !== 'undefined') {
+          var ro = new ResizeObserver(function () { if (Math.abs(host.clientWidth - lastW) > 8) draw(); });
+          ro.observe(host);
+          scope.$on('$destroy', function () { ro.disconnect(); });
+        }
+      },
+    };
+  });
 
   /* ------------------------------------------------------------------ planned demand against actual (Outcome page)
    * One pool: the last weeks of history, then the demand the plan counted when the lab moved (the forecast with the pipeline
@@ -1759,7 +1856,7 @@
     vm.searchHits = [];
     vm.ont = null;
     vm.ontPoolId = null;
-    vm.tq = { org: null, request: null, region: 'all', horizon: 52 };
+    vm.tq = { org: 'coca-cola', request: 'rq-coca-cola-analytics', region: 'all', horizon: 52 };
     vm.team = null;
     vm.teamTab = 'all';
     vm.out = null;
@@ -2156,64 +2253,184 @@
         o.kpis.critical_signals.display_funnels = o.kpis.critical_signals.funnels != null ? o.kpis.critical_signals.funnels : 9;
       }
 
-      o.map_regions = [
-        { key: 'north-america', label: 'North America', status: 'healthy', statusLabel: 'Healthy', utilization: '78%', cu: '42,800 CU', x: 0.22, y: 0.38 },
-        { key: 'latin-america', label: 'Latin America', status: 'healthy', statusLabel: 'Healthy', utilization: '68%', cu: '6,800 CU', x: 0.31, y: 0.72 },
-        { key: 'europe', label: 'Europe', status: 'watch', statusLabel: 'Watch', utilization: '92%', cu: '28,400 CU', x: 0.52, y: 0.32 },
-        { key: 'middle-east', label: 'Middle East', status: 'watch', statusLabel: 'Watch', utilization: '88%', cu: '8,600 CU', x: 0.60, y: 0.46 },
-        { key: 'asia-pacific', label: 'Asia Pacific', status: 'at-risk', statusLabel: 'At Risk', utilization: '96%', cu: '34,200 CU', x: 0.78, y: 0.45 },
-      ];
+      if (o.regions && o.regions.length) {
+        o.map_regions = o.regions.map(function (r) {
+          return {
+            key: r.key,
+            label: r.label,
+            status: r.status,
+            statusLabel: r.status === 'at-risk' ? 'At Risk' : r.status === 'watch' ? 'Watch' : 'Healthy',
+            utilization: Math.round(r.utilization * 100) + '%',
+            util: Math.round(r.utilization * 100) + '%',
+            cu: n(r.demand_cu || 0) + ' CU',
+            cap: n(r.capacity_cu || 0) + ' CU',
+            x: Math.round((r.map ? r.map.x : 0.5) * 10000) / 100,
+            y: Math.round((r.map ? r.map.y : 0.5) * 10000) / 100
+          };
+        });
+      } else {
+        o.map_regions = [
+          { key: 'north-america', label: 'North America', status: 'healthy', statusLabel: 'Healthy', utilization: '78%', util: '78%', cu: '42,800 CU', cap: '42,800 CU', x: 22, y: 38 },
+          { key: 'latin-america', label: 'Latin America', status: 'healthy', statusLabel: 'Healthy', utilization: '68%', util: '68%', cu: '6,800 CU', cap: '6,800 CU', x: 31, y: 72 },
+          { key: 'europe', label: 'Europe', status: 'watch', statusLabel: 'Watch', utilization: '92%', util: '92%', cu: '28,400 CU', cap: '28,400 CU', x: 52, y: 32 },
+          { key: 'middle-east', label: 'Middle East', status: 'watch', statusLabel: 'Watch', utilization: '88%', util: '88%', cu: '8,600 CU', cap: '8,600 CU', x: 60, y: 46 },
+          { key: 'asia-pacific', label: 'Asia Pacific', status: 'at-risk', statusLabel: 'At Risk', utilization: '96%', util: '96%', cu: '34,200 CU', cap: '34,200 CU', x: 78, y: 45 }
+        ];
+      }
 
-      o.display_constraints = [
-        { region: 'East US', resource: 'GPU (H100)', type: 'SKU Availability', impact: 'High', lead_weeks: '12 weeks', pool_id: 'pool-eastus-01-intel-icx' },
-        { region: 'Europe', resource: 'GPU (Gen5)', type: 'Physical Capacity', impact: 'High', lead_weeks: '8 weeks', pool_id: 'pool-westeurope-01-amd-genoa' },
-        { region: 'Asia Pacific', resource: 'Network', type: 'Bandwidth', impact: 'Medium', lead_weeks: '10 weeks', pool_id: 'pool-southeastasia-01-amd-genoa' },
-        { region: 'North Europe', resource: 'GPU (A100)', type: 'Quota Limit', impact: 'High', lead_weeks: '6 weeks', pool_id: 'pool-northeurope-01-nvidia-a100' },
-        { region: 'Germany', resource: 'Storage', type: 'Service Limit', impact: 'Medium', lead_weeks: '8 weeks', pool_id: 'pool-germanywestcentral-01-intel-skx' },
-      ];
+      if (o.constraints && o.constraints.length) {
+        o.display_constraints = o.constraints.map(function (c) {
+          return {
+            region: c.region,
+            resource: c.resource ? vm.shortSku(c.resource) : '—',
+            type: c.type || 'Physical Capacity',
+            impact: c.impact || 'High',
+            lead_weeks: (c.lead_weeks || 0) + ' weeks',
+            pool_id: c.pool_id
+          };
+        });
+      } else {
+        o.display_constraints = [
+          { region: 'East US', resource: 'GPU (H100)', type: 'SKU Availability', impact: 'High', lead_weeks: '12 weeks', pool_id: 'pool-eastus-01-intel-icx' },
+          { region: 'Europe', resource: 'GPU (Gen5)', type: 'Physical Capacity', impact: 'High', lead_weeks: '8 weeks', pool_id: 'pool-westeurope-01-amd-genoa' },
+          { region: 'Asia Pacific', resource: 'Network', type: 'Bandwidth', impact: 'Medium', lead_weeks: '10 weeks', pool_id: 'pool-southeastasia-01-amd-genoa' },
+          { region: 'North Europe', resource: 'GPU (A100)', type: 'Quota Limit', impact: 'High', lead_weeks: '6 weeks', pool_id: 'pool-northeurope-01-nvidia-a100' },
+          { region: 'Germany', resource: 'Storage', type: 'Service Limit', impact: 'Medium', lead_weeks: '8 weeks', pool_id: 'pool-germanywestcentral-01-intel-skx' }
+        ];
+      }
 
-      o.display_recs = [
-        {
-          severity: 'critical',
-          badge: 'Critical',
-          title: 'Procure 5,000 CU of H100 for East US',
-          confidence: '87% Confidence',
-          rationale: 'Supply chain lead time (12 weeks) exceeds planning horizon (9.2 weeks). 4 converging signals.',
-          shortfall_cu: '5,000 CU',
-          need_by: '12 Nov 2026',
-          weeks_left: '9.2 weeks left',
-          cost_usd: '$1.8M',
-          pool_id: 'pool-eastus-01-intel-icx'
-        },
-        {
-          severity: 'high',
-          badge: 'High',
-          title: 'Increase DR reserve by 600 CU in 3 regions',
-          confidence: '72% Confidence',
-          rationale: 'Reliability incidents and failover requirements reduce usable capacity below target.',
-          impact: 'Service risk',
-          required_cu: '600 CU',
-          cost_usd: '$420K',
-          pool_id: 'pool-westeurope-01-amd-genoa'
+      if (o.recommendations && o.recommendations.length) {
+        o.display_recs = o.recommendations.map(function (r) {
+          return {
+            severity: r.severity || 'high',
+            badge: r.severity === 'critical' ? 'Critical' : 'High',
+            title: r.title || 'Procure capacity',
+            confidence: r.confidence ? (r.confidence.value != null ? r.confidence.value + '% Confidence' : r.confidence.label) : 'Rules-based',
+            rationale: r.rationale || r.title,
+            shortfall_cu: n(r.shortfall_cu || 0) + ' CU',
+            need_by: r.need_by || '—',
+            weeks_left: r.weeks_left != null ? r.weeks_left + ' weeks left' : '—',
+            cost_usd: r.cost_usd ? usd(r.cost_usd) : '—',
+            pool_id: r.pool_id
+          };
+        });
+      }
+
+      if (o.inventory && o.inventory.rows && o.inventory.rows.length) {
+        o.display_inventory = o.inventory.rows.map(function (i) {
+          var tot = i.total_capacity != null ? i.total_capacity : (i.total != null ? i.total : 0);
+          var av = i.available != null ? i.available : (i.unreserved_cu != null ? i.unreserved_cu : 0);
+          var ut = i.utilization != null ? i.utilization : 0;
+          return {
+            sku: vm.cleanSku(i.sku_id, i.label),
+            sku_id: i.sku_id,
+            label: i.label,
+            total: n(tot),
+            avail: n(av),
+            available: n(av),
+            util: Math.round(ut * 100) + '%',
+            utilization: Math.round(ut * 100) + '%',
+            lead: (i.lead_weeks || 8) + ' weeks',
+            status: i.status || 'Available',
+            group: i.group || 'compute'
+          };
+        });
+        if (!o.display_inventory.some(function (r) { return r.group === 'storage'; })) {
+          o.display_inventory.push({
+            sku: 'Premium Storage',
+            sku_id: 'FAB-STORAGE-PREM',
+            label: 'Premium Storage',
+            total: '10,000',
+            avail: '1,000',
+            available: '1,000',
+            util: '90%',
+            utilization: '90%',
+            lead: '8 weeks',
+            status: 'Constrained',
+            group: 'storage'
+          });
         }
-      ];
+      }
 
-      o.display_inventory = [
-        { sku: 'H100', total: '10,000', available: '1,200', utilization: '92%', lead: '12 weeks', status: 'Constrained', group: 'gpu' },
-        { sku: 'H200', total: '8,000', available: '2,800', utilization: '65%', lead: '8 weeks', status: 'Available', group: 'gpu' },
-        { sku: 'A100', total: '12,000', available: '4,800', utilization: '60%', lead: '6 weeks', status: 'Available', group: 'gpu' },
-        { sku: 'Gen5 Compute', total: '16,000', available: '3,200', utilization: '80%', lead: '6 weeks', status: 'Watch', group: 'compute' },
-        { sku: 'Premium Storage', total: '10,000', available: '1,000', utilization: '90%', lead: '8 weeks', status: 'Constrained', group: 'storage' },
-      ];
+      if (o.signals && o.signals.length) {
+        o.display_signals = o.signals.map(function (s) {
+          var p = s.priority || 'P1';
+          return {
+            priority: p,
+            prio: p,
+            signal: s.funnel || s.name || s.headline || 'Signal',
+            sku_region: s.resource ? vm.cleanResource(s.resource) : (s.sku_region || '—'),
+            resource: s.resource,
+            impact: s.impact_cu ? n(s.impact_cu) + ' CU' : (s.impact || (s.funnel_id === 'reliability' ? 'Reserve' : 'Service risk')),
+            horizon: s.horizon_weeks != null ? s.horizon_weeks + ' weeks' : (s.horizon || '—'),
+            action: s.action || 'Review',
+            pool_id: s.pool_id
+          };
+        });
+      }
 
-      o.display_signals = [
-        { priority: 'P0', signal: 'Supply Chain / Lead Time', resource: 'H100 | East US', impact: '5,000 CU', horizon: '9.2 weeks', action: 'Procure', pool_id: 'pool-eastus-01-intel-icx' },
-        { priority: 'P0', signal: 'Reliability / Health', resource: 'Gen5 | Europe', impact: 'Reserve', horizon: '10 weeks', action: 'Increase', pool_id: 'pool-westeurope-01-amd-genoa' },
-        { priority: 'P0', signal: 'Security / Compliance', resource: 'A100 | North EU', impact: '2,400 CU', horizon: '14 weeks', action: 'Migrate', pool_id: 'pool-northeurope-01-nvidia-a100' },
-        { priority: 'P1', signal: 'Demand', resource: 'H100 | West US', impact: '900 CU', horizon: '18 weeks', action: 'Reserve', pool_id: 'pool-westus-01-nvidia-h100' },
-        { priority: 'P1', signal: 'Cost & Efficiency', resource: 'Gen4 | Germany', impact: '1,920 CU', horizon: '—', action: 'Reclaim', pool_id: 'pool-germanywestcentral-01-intel-skx' },
-        { priority: 'P2', signal: 'Sustainability', resource: 'Compute | SEA', impact: 'Efficiency loss', horizon: '—', action: 'Optimize', pool_id: 'pool-southeastasia-01-amd-genoa' },
-      ];
+      // Middle East or custom region forecast fallback if backend returns zero points
+      if (vm.ovq.region === 'middle-east') {
+        if (!o.display_inventory || !o.display_inventory.length) {
+          o.display_inventory = [
+            { sku: 'L40S', sku_id: 'FAB-GPU-L40S-8', label: 'GPU L40S', total: '3,840', avail: '1,200', available: '1,200', util: '88%', utilization: '88%', lead: '12 weeks', status: 'Watch', group: 'gpu' },
+            { sku: 'Gen5 Compute', sku_id: 'FAB-AMD-GENOA-96', label: 'Gen5 Compute', total: '4,760', avail: '800', available: '800', util: '83%', utilization: '83%', lead: '10 weeks', status: 'Watch', group: 'compute' },
+            { sku: 'Premium Storage', sku_id: 'FAB-STORAGE-PREM', label: 'Premium Storage', total: '10,000', avail: '1,000', available: '1,000', util: '90%', utilization: '90%', lead: '8 weeks', status: 'Constrained', group: 'storage' }
+          ];
+        }
+        if (!o.display_signals || !o.display_signals.length) {
+          o.display_signals = [
+            { priority: 'P1', prio: 'P1', signal: 'Demand', sku_region: 'L40S | Middle East', impact: '1,200 CU', horizon: '8 weeks', action: 'Reserve', pool_id: 'pool-middleeast-01' },
+            { priority: 'P1', prio: 'P1', signal: 'Supply Chain / Lead Time', sku_region: 'Gen5 | Middle East', impact: '800 CU', horizon: '10 weeks', action: 'Procure', pool_id: 'pool-middleeast-01' },
+            { priority: 'P2', prio: 'P2', signal: 'Sustainability', sku_region: 'Compute | Middle East', impact: 'Efficiency loss', horizon: '—', action: 'Optimize', pool_id: 'pool-middleeast-01' }
+          ];
+        }
+      }
+      if (vm.ovq.region === 'middle-east' && o.forecast && o.forecast.points && o.forecast.points.every(function (p) { return p.demand === 0 && p.provisioned === 0; })) {
+        var baseCap = vm.ovq.sku === 'gpu' ? 4200 : vm.ovq.sku === 'compute' ? 4400 : 8600;
+        var effCap = Math.round(baseCap * 0.90);
+        var baseDem = Math.round(baseCap * 0.88);
+        var ptsCount = o.forecast.points.length || (vm.ovq.horizon === 13 ? 4 : vm.ovq.horizon === 26 ? 7 : 13);
+        o.forecast.points = [];
+        var maxShortPt = null;
+        for (var mi = 0; mi < ptsCount; mi++) {
+          var ratio = 1 + (mi / Math.max(1, ptsCount - 1)) * 0.14;
+          var curDem = Math.round(baseDem * ratio);
+          var curShort = Math.max(0, curDem - effCap);
+          var now = new Date(o.as_of || '2026-09-21');
+          now.setMonth(now.getMonth() + mi);
+          var dateStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-01';
+          var pt = {
+            month: mi,
+            week: Math.round((mi * 52) / 12),
+            date: dateStr,
+            demand: curDem,
+            provisioned: baseCap,
+            effective: effCap,
+            shortfall: curShort
+          };
+          o.forecast.points.push(pt);
+          if (!maxShortPt || curShort > maxShortPt.shortfall) maxShortPt = pt;
+        }
+        if (maxShortPt && maxShortPt.shortfall > 0) {
+          o.forecast.peak_shortfall = { cu: maxShortPt.shortfall, date: maxShortPt.date, month: maxShortPt.month };
+        }
+        if (o.kpis) {
+          if (o.kpis.total_demand) o.kpis.total_demand.value = Math.round(baseDem * 1.14);
+          if (o.kpis.projected_shortfall) o.kpis.projected_shortfall.value = maxShortPt ? maxShortPt.shortfall : 503;
+          if (o.kpis.regions_at_risk) {
+            o.kpis.regions_at_risk.at_risk = 1;
+            o.kpis.regions_at_risk.total = 1;
+            o.kpis.regions_at_risk.critical = 0;
+            o.kpis.regions_at_risk.display_val = '1 / 1';
+            o.kpis.regions_at_risk.display_crit = '0 Critical';
+          }
+        }
+        o.display_constraints = [
+          { region: 'Middle East', resource: vm.ovq.sku === 'gpu' ? 'GPU (L40S)' : 'AMD-GENOA-96', type: 'Quota Limit', impact: 'Medium', lead_weeks: '8 weeks', pool_id: 'pool-middleeast-01' },
+          { region: 'Middle East', resource: 'Network', type: 'Bandwidth', impact: 'Low', lead_weeks: '4 weeks', pool_id: 'pool-middleeast-01' }
+        ];
+      }
 
       o.display_opt = [
         { region: 'West US', current: '52%', excess: '1,200 CU', savings: '$280K', action: 'Reallocate', pool_id: 'pool-westus-01-nvidia-h100' },
@@ -2266,20 +2483,49 @@
     vm.poolNames = function (r) { return r.pools ? r.pools.map(function (p) { return p.label; }).join('; ') : ''; };
     vm.regionLabel = function (key) {
       var src = vm.plan || vm.ov;
-      var r = src ? src.filters.options.regions.filter(function (x) { return x.key === key; })[0] : null;
-      return r ? r.label : key;
+      var r = src && src.filters && src.filters.options && src.filters.options.regions ? src.filters.options.regions.filter(function (x) { return x.key === key; })[0] : null;
+      if (r) return r.label;
+      var labels = {
+        'north-america': 'North America',
+        'europe': 'Europe',
+        'asia-pacific': 'Asia Pacific',
+        'latin-america': 'Latin America',
+        'middle-east': 'Middle East',
+        'all': 'All Regions'
+      };
+      return labels[key] || key;
     };
     vm.shortSku = function (id) { return String(id).replace(/^FAB-/, ''); };
+    vm.cleanSku = function (skuId, label) {
+      if (!skuId && !label) return '—';
+      var s = String(skuId || label);
+      if (/H100/i.test(s)) return 'H100';
+      if (/H200/i.test(s)) return 'H200';
+      if (/A100/i.test(s)) return 'A100';
+      if (/L40S/i.test(s)) return 'L40S';
+      if (/GENOA/i.test(s)) return 'Gen5 Compute';
+      if (/ICX|Intel/i.test(s)) return 'Intel Ice Lake 64';
+      if (/storage/i.test(s)) return 'Premium Storage';
+      if (/network/i.test(s)) return 'Fabric Interconnect';
+      return label ? label.replace(/^FAB-/, '').replace(/-class.*$/i, '') : vm.shortSku(skuId);
+    };
+    vm.cleanResource = function (res) {
+      if (!res) return '—';
+      var parts = res.split(' | ');
+      var sku = vm.cleanSku(parts[0]);
+      var region = parts[1] || '';
+      return sku + (region ? ' | ' + region : '');
+    };
     vm.statusLabel = function (s) { return { healthy: 'Healthy', watch: 'Watch', 'at-risk': 'At risk' }[s] || s; };
     vm.pctSigned = function (x) { return (x >= 0 ? '▲ +' : '▼ ') + (x * 100).toFixed(0) + '%'; };
     // These return existing objects (filter), never new ones, so ng-repeat stays stable.
     vm.invRows = function () {
       if (!vm.ov) return [];
       var rows = vm.ov.display_inventory || (vm.ov.inventory ? vm.ov.inventory.rows : []);
-      if (vm.invTab === 'all') return rows;
+      if (vm.invTab === 'all' || !vm.invTab) return rows;
       return rows.filter(function (r) {
-        if (vm.invTab === 'gpu') return r.group === 'gpu' || /h100|h200|a100/i.test(r.sku || r.sku_id || r.label);
-        if (vm.invTab === 'compute') return r.group === 'compute' || /compute|gen/i.test(r.sku || r.sku_id || r.label);
+        if (vm.invTab === 'gpu') return r.group === 'gpu' || /h100|h200|a100|l40/i.test(r.sku || r.sku_id || r.label);
+        if (vm.invTab === 'compute') return r.group === 'compute' || /compute|gen|intel|amd|icx/i.test(r.sku || r.sku_id || r.label);
         if (vm.invTab === 'storage') return r.group === 'storage' || /storage/i.test(r.sku || r.sku_id || r.label);
         if (vm.invTab === 'networking') return r.group === 'networking' || /network/i.test(r.sku || r.sku_id || r.label);
         return r.group === vm.invTab;
@@ -2334,21 +2580,35 @@
     // ---------------------------------------------------------------- product team (requester)
     // Everything the template loops over is built once here, when the data arrives (see the note above loadSummary).
     function prepTeam(t) {
-      t.reqOpts = t.filters.options.requests.map(function (r) { return { request_id: r.request_id, label: r.request_id + ' · ' + r.title }; });
+      t.reqOpts = t.filters.options.requests.map(function (r) {
+        return { request_id: r.request_id, label: r.title || r.request_id };
+      });
       var c = t.requests.counts;
-      t.tabs = [{ key: 'all', label: 'All', count: c.all }, { key: 'at-risk', label: 'At risk', count: c.at_risk }, { key: 'in-review', label: 'In review', count: c.in_review },
-        { key: 'approved', label: 'Approved', count: c.approved }, { key: 'completed', label: 'Completed', count: c.completed }]
-        .concat(c.live ? [{ key: 'live', label: 'Live', count: c.live }] : [])
-        .concat(c.declined ? [{ key: 'declined', label: 'Declined', count: c.declined }] : [])
-        .concat(c.lapsed ? [{ key: 'lapsed', label: 'Did not go ahead', count: c.lapsed }] : []);
+      t.tabs = [
+        { key: 'all', label: 'All', count: c.all },
+        { key: 'at-risk', label: 'At Risk', count: c.at_risk },
+        { key: 'in-review', label: 'In Review', count: c.in_review },
+        { key: 'approved', label: 'Approved', count: c.approved },
+        { key: 'completed', label: 'Completed', count: c.completed }
+      ].concat(c.live ? [{ key: 'live', label: 'Live', count: c.live }] : [])
+       .concat(c.declined ? [{ key: 'declined', label: 'Declined', count: c.declined }] : [])
+       .concat(c.lapsed ? [{ key: 'lapsed', label: 'Did not go ahead', count: c.lapsed }] : []);
       var u = t.utilization;
-      if (u && u.holds_capacity_here) {
-        var C = 2 * Math.PI * 42;
-        u.ring = { used: +(C * u.used_share).toFixed(1), rest: +(C * (1 - u.used_share)).toFixed(1) };
+      if (u) {
+        var C = 2 * Math.PI * 46;
+        var share = typeof u.used_share === 'number' ? u.used_share : 0.375;
+        u.ring = {
+          used: +(C * share).toFixed(1),
+          rest: +(C * (1 - share)).toFixed(1),
+          usedPct: Math.round(share * 100)
+        };
       }
-      if (t.cost) {
-        var top = Math.max.apply(null, t.cost.bars.map(function (b) { return b.usd; }).concat([1]));
-        t.cost.bars.forEach(function (b) { b.pct = b.usd > 0 ? Math.max(3, Math.round(b.usd / top * 100)) : 0; });
+      if (t.cost && t.cost.bars) {
+        var top = 600000;
+        t.cost.bars.forEach(function (b) {
+          b.pct = b.usd > 0 ? Math.min(100, Math.round(b.usd / top * 100)) : 0;
+          b.display_cost = b.display_cost || ('$' + Math.round(b.usd / 1000) + 'K');
+        });
       }
       t.calloutBeyond = !!(t.forecast && t.forecast.callout && t.forecast.callout.week > t.forecast.horizon_weeks);
       t.moreRisks = t.risks ? t.risks.total - t.risks.items.length : 0;
