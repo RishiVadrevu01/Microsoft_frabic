@@ -28,6 +28,7 @@ const { approvalCheck, budgetOf } = require('./lib/approval');
 const { buildOptions } = require('./lib/options');
 const { advisorFacts } = require('./lib/advisor');
 const scenarios = require('./lib/scenarios');
+const { buildActionSignals, buildSignalDetail } = require('./lib/signals');
 
 const MAX_BODY = 64 * 1024;
 const MIME = {
@@ -114,6 +115,10 @@ function createApp({ store, webRoot, explainer = createExplainer() }) {
     const q = actionQueue(store);
     return { ...q, items: category ? q.items.filter((i) => i.category === category) : q.items };
   });
+
+  // Action Queue Signals: dynamic calculations from pool models for each signal
+  route('GET', '/api/action-signals', () => buildActionSignals(store));
+  route('GET', '/api/action-signals/:id', ({ params }) => buildSignalDetail(store, params.id));
 
   // The Product Team (Requester) view: one requester's requests and, for the selected one, what can be served,
   // when, at what cost and what to do about the rest. ?org=&request=&region=&horizon=13|26|52

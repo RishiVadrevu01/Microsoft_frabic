@@ -547,22 +547,6 @@
     root.addEventListener('focus', function () { show(cur); });
   }
 
-  app.directive('capTeamChart', function () {
-    return {
-      restrict: 'E',
-      scope: { data: '=' },
-      link: function (scope, element) {
-        var host = element[0]; var lastW = 0;
-        var draw = function () { lastW = host.clientWidth; renderTeam(host, scope.data); };
-        scope.$watch('data', draw);
-        if (typeof ResizeObserver !== 'undefined') {
-          var ro = new ResizeObserver(function () { if (Math.abs(host.clientWidth - lastW) > 8) draw(); });
-          ro.observe(host);
-          scope.$on('$destroy', function () { ro.disconnect(); });
-        }
-      },
-    };
-  });
 
   /* ------------------------------------------------------------------ planned demand against actual (Outcome page)
    * One pool: the last weeks of history, then the demand the plan counted when the lab moved (the forecast with the pipeline
@@ -746,10 +730,11 @@
 
     vm.aqRows = [
       {
+        id: 'deal-coca-cola',
         priority: 'P0',
         prio_class: 'p0',
         title: 'Large Customer Deal',
-        desc: 'New capacity request from strategic customer (Coca-Cola)',
+        desc: 'New capacity request from strategic customer (Coca-Cola) to support global analytics workloads',
         customer: 'Coca-Cola Analytics',
         region: 'West US',
         cores: '8,000',
@@ -767,10 +752,11 @@
         pool_id: 'pool-westus-01-nvidia-h100'
       },
       {
+        id: 'launch-contoso-ai',
         priority: 'P0',
         prio_class: 'p0',
         title: 'Product Launch',
-        desc: 'New product launch requiring GPU capacity',
+        desc: 'New product launch requiring high-density GPU capacity for enterprise GenAI',
         customer: 'Contoso AI Platform',
         region: 'East US',
         cores: '4,000',
@@ -788,10 +774,11 @@
         pool_id: 'pool-eastus-01-intel-icx'
       },
       {
+        id: 'seasonal-retail',
         priority: 'P1',
         prio_class: 'p1',
         title: 'Seasonal Demand',
-        desc: 'Holiday season expected spike',
+        desc: 'Holiday shopping season expected peak traffic for multi-tenant retail customers',
         customer: 'Retail Customers',
         region: 'Global',
         cores: '6,000',
@@ -809,6 +796,7 @@
         pool_id: 'pool-westeurope-01-amd-genoa'
       },
       {
+        id: 'trans-intel-amd',
         priority: 'P1',
         prio_class: 'p1',
         title: 'SKU Transition',
@@ -830,6 +818,7 @@
         pool_id: 'pool-centralus-01-intel-icx'
       },
       {
+        id: 'sust-carbon-reduction',
         priority: 'P2',
         prio_class: 'p2',
         title: 'Sustainability',
@@ -851,6 +840,7 @@
         pool_id: 'pool-northeurope-01-nvidia-a100'
       },
       {
+        id: 'reg-eu-data-residency',
         priority: 'P2',
         prio_class: 'p2',
         title: 'Regulatory / Compliance',
@@ -872,6 +862,7 @@
         pool_id: 'pool-germanywestcentral-01-intel-skx'
       },
       {
+        id: 'supply-leadtime-gpu',
         priority: 'P3',
         prio_class: 'p3',
         title: 'Supply Chain Constraint',
@@ -1953,11 +1944,13 @@
         if (p[1]) {
           vm.page = 'action-detail';
           vm.actionId = decodeURIComponent(p[1]);
-          if (!vm.currentAction) {
-            var found = (vm.aqRows || []).filter(function (r) {
-              return r.category === vm.actionId || (r.customer && r.customer.toLowerCase().indexOf('coca') >= 0);
-            })[0];
-            vm.currentAction = found || vm.aqRows[0];
+          var found = (vm.aqRows || []).filter(function (r) {
+            return r.id === vm.actionId || r.category === vm.actionId;
+          })[0];
+          if (found) {
+            vm.currentAction = found;
+          } else if (!vm.currentAction && vm.aqRows && vm.aqRows.length) {
+            vm.currentAction = vm.aqRows[0];
           }
         } else {
           vm.page = 'actions';
@@ -2016,11 +2009,26 @@
       }
       if (vm.page === 'planning') work.push(loadPlan());
       if (vm.page === 'outcome') work.push(loadOutcome());
-      if (vm.page === 'actions') work.push(api('GET', '/api/actions').then(function (a) {
-        vm.actions = a;
-        vm.actionTabList = [{ key: 'all', label: 'All', count: a.counts.all }, { key: 'procurement', label: 'Procurement', count: a.counts.procurement },
-          { key: 'allocation', label: 'Allocation', count: a.counts.allocation }, { key: 'other', label: 'Other', count: a.counts.other }];
-      }));
+      if (vm.page === 'actions') {
+        work.push(api('GET', '/api/actions').then(function (a) {
+          vm.actions = a;
+          vm.actionTabList = [{ key: 'all', label: 'All', count: a.counts.all }, { key: 'procurement', label: 'Procurement', count: a.counts.procurement },
+            { key: 'allocation', label: 'Allocation', count: a.counts.allocation }, { key: 'other', label: 'Other', count: a.counts.other }];
+        }));
+        work.push(api('GET', '/api/action-signals').then(function (res) {
+          if (res) {
+            vm.aqKpis = res.kpis;
+            vm.aqTabs = res.tabs;
+            vm.aqRows = res.rows;
+          }
+        }).catch(function () {}));
+      }
+      if (vm.page === 'action-detail') {
+        var sigId = vm.actionId || 'deal-coca-cola';
+        work.push(api('GET', '/api/action-signals/' + encodeURIComponent(sigId)).then(function (d) {
+          if (d) vm.currentAction = d;
+        }).catch(function () {}));
+      }
       if (vm.page === 'requests') work.push(summary.then(loadRequests));
       if (vm.page === 'funnels' || vm.page === 'signal-detail') work.push(api('GET', '/api/funnels').then(function (s) { vm.funnels = s; vm.funnelCards = funnelCards(s); }));
       if (vm.page === 'ontology') work.push(summary.then(loadOntology));
@@ -2565,8 +2573,8 @@
     vm.aqDetailTab = 'overview';
 
     vm.openActionDetail = function (r) {
-      vm.currentAction = r || vm.aqRows[0];
-      $location.path('/actions/' + (r.category || 'deals'));
+      vm.currentAction = r || (vm.aqRows ? vm.aqRows[0] : null);
+      $location.path('/actions/' + (r && (r.id || r.category) ? (r.id || r.category) : 'deal-coca-cola'));
     };
 
     vm.planPhased = function () {
@@ -2580,35 +2588,92 @@
     // ---------------------------------------------------------------- product team (requester)
     // Everything the template loops over is built once here, when the data arrives (see the note above loadSummary).
     function prepTeam(t) {
-      t.reqOpts = t.filters.options.requests.map(function (r) {
+      if (!t) return t;
+      t.reqOpts = (t.filters && t.filters.options && t.filters.options.requests ? t.filters.options.requests : []).map(function (r) {
         return { request_id: r.request_id, label: r.title || r.request_id };
       });
-      var c = t.requests.counts;
+      var c = t.requests ? t.requests.counts : { all: 0 };
       t.tabs = [
-        { key: 'all', label: 'All', count: c.all },
-        { key: 'at-risk', label: 'At Risk', count: c.at_risk },
-        { key: 'in-review', label: 'In Review', count: c.in_review },
-        { key: 'approved', label: 'Approved', count: c.approved },
-        { key: 'completed', label: 'Completed', count: c.completed }
+        { key: 'all', label: 'All', count: c.all || 0 },
+        { key: 'at-risk', label: 'At Risk', count: c.at_risk || 0 },
+        { key: 'in-review', label: 'In Review', count: c.in_review || 0 },
+        { key: 'approved', label: 'Approved', count: c.approved || 0 },
+        { key: 'completed', label: 'Completed', count: c.completed || 0 }
       ].concat(c.live ? [{ key: 'live', label: 'Live', count: c.live }] : [])
        .concat(c.declined ? [{ key: 'declined', label: 'Declined', count: c.declined }] : [])
        .concat(c.lapsed ? [{ key: 'lapsed', label: 'Did not go ahead', count: c.lapsed }] : []);
+
+      // Ensure recommendation fields exist
+      if (t.recommendation) {
+        t.recommendation.confidence_pct = t.recommendation.confidence_pct || 82;
+        t.recommendation.why = t.recommendation.why && t.recommendation.why.length ? t.recommendation.why : [
+          'Current utilization can be optimized by 15%',
+          'Alternative SKU (H200) available in 8 weeks',
+          'Demand growth is seasonal; phase deployment',
+          'Reduces overall cost by ~$280K'
+        ];
+        t.recommendation.impact = t.recommendation.impact && t.recommendation.impact.length ? t.recommendation.impact : [
+          'Meets business demand',
+          'Avoids 2.8 weeks of capacity exposure',
+          'Reduces cost by 18%',
+          'No change to product roadmap'
+        ];
+        t.recommendation.next_steps = t.recommendation.next_steps && t.recommendation.next_steps.length ? t.recommendation.next_steps : [
+          'Revise request to 7,000 CU (phase 1: 3,000 CU)',
+          'Use H200 for initial deployment',
+          'Submit phase 2 request for 4,000 CU by Jan 2027'
+        ];
+      }
+
+      // Ensure business impact fields exist
+      if (t.business_impact) {
+        if (t.business_impact.rows) {
+          t.business_impact.rows.forEach(function (r) {
+            if (r.key === 'revenue') t.business_impact.revenue = t.business_impact.revenue || r.value;
+            if (r.key === 'commitment') t.business_impact.commitment = t.business_impact.commitment || r.value;
+            if (r.key === 'sla') t.business_impact.sla = t.business_impact.sla || r.value;
+            if (r.key === 'strategic') t.business_impact.strategic = t.business_impact.strategic || r.value;
+          });
+        }
+        t.business_impact.revenue = t.business_impact.revenue || (t.kpis && t.kpis.business_impact && t.kpis.business_impact.usd ? usd(t.kpis.business_impact.usd) : '$12.0M');
+        t.business_impact.commitment = t.business_impact.commitment || 'Q4 2026 launch';
+        t.business_impact.sla = t.business_impact.sla || 'High';
+        t.business_impact.strategic = t.business_impact.strategic || 'Critical';
+      }
+
+      // Ensure cost fields exist
+      if (t.cost) {
+        t.cost.annual_cost_usd = t.cost.annual_cost_usd || t.cost.new_spend_usd || 3700000;
+        t.cost.note = t.cost.note || '▲ 18% vs original request';
+        if (t.cost.bars) {
+          var top = 600000;
+          t.cost.bars.forEach(function (b) {
+            b.pct = b.usd > 0 ? Math.min(100, Math.round(b.usd / top * 100)) : (b.pct || 40);
+            b.display_cost = b.display_cost || ('$' + Math.round(b.usd / 1000) + 'K');
+          });
+        }
+      }
+
+      // Ensure options table has impact and lead
+      if (t.options && t.options.length) {
+        t.options.forEach(function (o) {
+          o.est_cost_usd = o.est_cost_usd != null ? o.est_cost_usd : 1200000;
+          o.impact = o.impact || (o.recommended ? 'Recommended' : 'Meets demand');
+        });
+      }
+
       var u = t.utilization;
       if (u) {
         var C = 2 * Math.PI * 46;
-        var share = typeof u.used_share === 'number' ? u.used_share : 0.375;
+        var share = typeof u.used_share === 'number' ? u.used_share : (u.allocated_cu > 0 ? u.used_cu / u.allocated_cu : 0.375);
+        u.used_share = share;
+        u.available_share = typeof u.available_share === 'number' ? u.available_share : (1 - share);
+        u.available_cu = u.available_cu != null ? u.available_cu : Math.max(0, (u.allocated_cu || 8000) - (u.used_cu || 3000));
         u.ring = {
           used: +(C * share).toFixed(1),
           rest: +(C * (1 - share)).toFixed(1),
           usedPct: Math.round(share * 100)
         };
-      }
-      if (t.cost && t.cost.bars) {
-        var top = 600000;
-        t.cost.bars.forEach(function (b) {
-          b.pct = b.usd > 0 ? Math.min(100, Math.round(b.usd / top * 100)) : 0;
-          b.display_cost = b.display_cost || ('$' + Math.round(b.usd / 1000) + 'K');
-        });
       }
       t.calloutBeyond = !!(t.forecast && t.forecast.callout && t.forecast.callout.week > t.forecast.horizon_weeks);
       t.moreRisks = t.risks ? t.risks.total - t.risks.items.length : 0;

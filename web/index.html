@@ -2285,9 +2285,9 @@
         <div class="aq-detail-banner__left">
           <div class="aq-detail-title-row">
             <h1 class="aq-detail-title">{{ vm.currentAction.title || 'Large Customer Deal' }} – {{ vm.currentAction.customer || 'Coca-Cola Analytics' }}</h1>
-            <span class="aq-prio-badge aq-prio-badge--p0">{{ vm.currentAction.priority || 'P0' }}</span>
+            <span class="aq-prio-badge" ng-class="'aq-prio-badge--' + (vm.currentAction.prio_class || 'p0')">{{ vm.currentAction.priority || 'P0' }}</span>
           </div>
-          <p class="aq-detail-subtitle">{{ vm.currentAction.desc || 'New capacity request from strategic customer (Coca-Cola)' }} to support global analytics workloads</p>
+          <p class="aq-detail-subtitle">{{ vm.currentAction.desc || 'New capacity request from strategic customer (Coca-Cola) to support global analytics workloads' }}</p>
         </div>
         <div class="aq-detail-banner__right">
           <div class="aq-detail-meta-item">
@@ -2300,7 +2300,7 @@
           <div class="aq-detail-meta-item">
             <span class="aq-detail-meta-label">STATUS</span>
             <div class="aq-detail-meta-val">
-              <span class="aq-status-pill aq-status-pill--partial">{{ vm.currentAction.status || 'Partial' }}</span>
+              <span class="aq-status-pill" ng-class="'aq-status-pill--' + (vm.currentAction.status_class || 'partial')">{{ vm.currentAction.status || 'Partial' }}</span>
             </div>
           </div>
           <div class="aq-detail-btn-group">
@@ -2384,10 +2384,10 @@
           <div class="aq-detail-kpicard__label">
             Unfulfilled Gap <span class="info-circle" title="Shortfall between requested and available supply">ⓘ</span>
           </div>
-          <div class="aq-detail-kpicard__val text-danger">
-            <strong>{{ vm.currentAction.gap || '5,000' }}</strong> <span class="aq-unit text-danger">cores</span>
+          <div class="aq-detail-kpicard__val" ng-class="vm.currentAction.gap_class || 'text-danger'">
+            <strong>{{ vm.currentAction.gap || '5,000' }}</strong> <span class="aq-unit" ng-class="vm.currentAction.gap_class || 'text-danger'">cores</span>
           </div>
-          <div class="aq-detail-kpicard__sub text-danger font-medium">(62% of request)</div>
+          <div class="aq-detail-kpicard__sub font-medium" ng-class="vm.currentAction.gap_class || 'text-danger'">({{ vm.currentAction.gap_pct || 62 }}% of request)</div>
         </article>
 
         <!-- Card 5: Est. Revenue Impact -->
@@ -2400,10 +2400,10 @@
           <div class="aq-detail-kpicard__label">
             Est. Revenue Impact <span class="info-circle" title="Projected revenue impact if demand is not satisfied">ⓘ</span>
           </div>
-          <div class="aq-detail-kpicard__val">
+          <div class="aq-detail-kpicard__val" ng-class="vm.currentAction.rev_class || 'text-danger'">
             <strong>{{ vm.currentAction.rev_impact || '$12.0M' }}</strong>
           </div>
-          <div class="aq-detail-kpicard__sub muted">(if not fulfilled by Mar 2025)</div>
+          <div class="aq-detail-kpicard__sub muted">(if not fulfilled by {{ vm.currentAction.target_date || 'Mar 2025' }})</div>
         </article>
       </section>
 
@@ -2443,32 +2443,32 @@
               <text x="288" y="145" text-anchor="middle" class="chart-axis-label" style="font-size: 9px; fill: #64748b;">May 2025</text>
               <text x="344" y="145" text-anchor="middle" class="chart-axis-label" style="font-size: 9px; fill: #64748b;">Jun 2025</text>
 
-              <!-- Month 1: Jan 2025 (Fulfilled: 1200) -->
-              <rect x="57" y="118" width="14" height="14" fill="#107c41" rx="1" />
+              <!-- Dynamic stacked bars from backend calculation -->
+              <g ng-if="vm.currentAction.chart && vm.currentAction.chart.points" ng-repeat="p in vm.currentAction.chart.points">
+                <rect ng-attr-x="{{ p.trend_x - 7 }}" ng-attr-y="{{ p.fulfilled_y }}" width="14" ng-attr-height="{{ p.fulfilled_h }}" fill="#107c41" rx="1" />
+                <rect ng-if="p.planned > 0" ng-attr-x="{{ p.trend_x - 7 }}" ng-attr-y="{{ p.planned_y }}" width="14" ng-attr-height="{{ p.planned_h }}" fill="#0078d4" rx="1" />
+                <rect ng-if="p.unfulfilled > 0" ng-attr-x="{{ p.trend_x - 7 }}" ng-attr-y="{{ p.unfulfilled_y }}" width="14" ng-attr-height="{{ p.unfulfilled_h }}" fill="#d13438" rx="1" />
+              </g>
 
-              <!-- Month 2: Feb 2025 (Fulfilled: 1500, Planned: 800) -->
-              <rect x="113" y="114" width="14" height="18" fill="#107c41" />
-              <rect x="113" y="104" width="14" height="10" fill="#0078d4" rx="1" />
+              <!-- Static fallback if backend points not yet returned -->
+              <g ng-if="!vm.currentAction.chart || !vm.currentAction.chart.points">
+                <rect x="57" y="118" width="14" height="14" fill="#107c41" rx="1" />
+                <rect x="113" y="114" width="14" height="18" fill="#107c41" />
+                <rect x="113" y="104" width="14" height="10" fill="#0078d4" rx="1" />
+                <rect x="169" y="108" width="14" height="24" fill="#107c41" />
+                <rect x="169" y="88" width="14" height="20" fill="#0078d4" rx="1" />
+                <rect x="225" y="108" width="14" height="24" fill="#107c41" />
+                <rect x="225" y="78" width="14" height="30" fill="#0078d4" rx="1" />
+                <rect x="281" y="108" width="14" height="24" fill="#107c41" />
+                <rect x="281" y="62" width="14" height="46" fill="#0078d4" rx="1" />
+                <rect x="337" y="108" width="14" height="24" fill="#107c41" />
+                <rect x="337" y="72" width="14" height="36" fill="#0078d4" />
+                <rect x="337" y="42" width="14" height="30" fill="#d13438" rx="1" />
+                <line x1="64" y1="124" x2="344" y2="36" stroke="#0078d4" stroke-width="2" stroke-dasharray="3 3" />
+              </g>
 
-              <!-- Month 3: Mar 2025 (Fulfilled: 2000, Planned: 1500) -->
-              <rect x="169" y="108" width="14" height="24" fill="#107c41" />
-              <rect x="169" y="88" width="14" height="20" fill="#0078d4" rx="1" />
-
-              <!-- Month 4: Apr 2025 (Fulfilled: 2000, Planned: 2400) -->
-              <rect x="225" y="108" width="14" height="24" fill="#107c41" />
-              <rect x="225" y="78" width="14" height="30" fill="#0078d4" rx="1" />
-
-              <!-- Month 5: May 2025 (Fulfilled: 2000, Planned: 3600) -->
-              <rect x="281" y="108" width="14" height="24" fill="#107c41" />
-              <rect x="281" y="62" width="14" height="46" fill="#0078d4" rx="1" />
-
-              <!-- Month 6: Jun 2025 (Fulfilled: 2000, Planned: 3000, Unfulfilled Gap: 2500) -->
-              <rect x="337" y="108" width="14" height="24" fill="#107c41" />
-              <rect x="337" y="72" width="14" height="36" fill="#0078d4" />
-              <rect x="337" y="42" width="14" height="30" fill="#d13438" rx="1" />
-
-              <!-- Trend dashed line: Requested (Coca-Cola) climbing from Jan to Jun -->
-              <line x1="64" y1="124" x2="344" y2="36" stroke="#0078d4" stroke-width="2" stroke-dasharray="3 3" />
+              <!-- Trend dashed line: Requested climbing from Jan to Jun -->
+              <path ng-if="vm.currentAction.chart.trend_path" ng-attr-d="{{ vm.currentAction.chart.trend_path }}" fill="none" stroke="#0078d4" stroke-width="2" stroke-dasharray="3 3" />
             </svg>
           </div>
           <!-- Chart Legend -->
@@ -2476,7 +2476,7 @@
             <span class="aq-legend-item"><span class="aq-sq aq-sq--green"></span> Fulfilled (Provider)</span>
             <span class="aq-legend-item"><span class="aq-sq aq-sq--blue"></span> Planned (Pipeline)</span>
             <span class="aq-legend-item"><span class="aq-sq aq-sq--red"></span> Unfulfilled Gap</span>
-            <span class="aq-legend-item"><span class="aq-line-dot">··</span> Requested (Coca-Cola)</span>
+            <span class="aq-legend-item"><span class="aq-line-dot">··</span> Requested ({{ (vm.currentAction.customer_info && vm.currentAction.customer_info.name) || vm.currentAction.customer || 'Coca-Cola' }})</span>
           </div>
         </section>
 
@@ -2495,48 +2495,55 @@
             </div>
           </div>
           <div class="aq-region-list">
-            <!-- Region 1: West US (3,200) -->
-            <div class="aq-region-row">
-              <span class="aq-region-name">West US</span>
+            <!-- Dynamic regions from backend calculation -->
+            <div class="aq-region-row" ng-if="vm.currentAction.regions && vm.currentAction.regions.length" ng-repeat="reg in vm.currentAction.regions">
+              <span class="aq-region-name">{{ reg.name }}</span>
               <div class="aq-region-bar-track">
-                <div class="aq-region-bar-seg aq-seg--green" style="width: 32%;"></div>
-                <div class="aq-region-bar-seg aq-seg--blue" style="width: 25%;"></div>
-                <div class="aq-region-bar-seg aq-seg--red" style="width: 25%;"></div>
+                <div class="aq-region-bar-seg aq-seg--green" ng-style="{'width': reg.fulfilled_pct + '%'}"></div>
+                <div class="aq-region-bar-seg aq-seg--blue" ng-style="{'width': reg.planned_pct + '%'}"></div>
+                <div class="aq-region-bar-seg aq-seg--red" ng-style="{'width': reg.unfulfilled_pct + '%'}"></div>
               </div>
-              <span class="aq-region-val">3,200</span>
+              <span class="aq-region-val">{{ reg.total }}</span>
             </div>
 
-            <!-- Region 2: East US (2,400) -->
-            <div class="aq-region-row">
-              <span class="aq-region-name">East US</span>
-              <div class="aq-region-bar-track">
-                <div class="aq-region-bar-seg aq-seg--green" style="width: 30%;"></div>
-                <div class="aq-region-bar-seg aq-seg--blue" style="width: 22%;"></div>
-                <div class="aq-region-bar-seg aq-seg--red" style="width: 28%;"></div>
+            <!-- Static fallback if regions not yet loaded -->
+            <div ng-if="!vm.currentAction.regions || !vm.currentAction.regions.length">
+              <div class="aq-region-row">
+                <span class="aq-region-name">West US</span>
+                <div class="aq-region-bar-track">
+                  <div class="aq-region-bar-seg aq-seg--green" style="width: 32%;"></div>
+                  <div class="aq-region-bar-seg aq-seg--blue" style="width: 25%;"></div>
+                  <div class="aq-region-bar-seg aq-seg--red" style="width: 25%;"></div>
+                </div>
+                <span class="aq-region-val">3,200</span>
               </div>
-              <span class="aq-region-val">2,400</span>
-            </div>
-
-            <!-- Region 3: North Europe (1,600) -->
-            <div class="aq-region-row">
-              <span class="aq-region-name">North Europe</span>
-              <div class="aq-region-bar-track">
-                <div class="aq-region-bar-seg aq-seg--green" style="width: 35%;"></div>
-                <div class="aq-region-bar-seg aq-seg--blue" style="width: 28%;"></div>
-                <div class="aq-region-bar-seg aq-seg--red" style="width: 19%;"></div>
+              <div class="aq-region-row">
+                <span class="aq-region-name">East US</span>
+                <div class="aq-region-bar-track">
+                  <div class="aq-region-bar-seg aq-seg--green" style="width: 30%;"></div>
+                  <div class="aq-region-bar-seg aq-seg--blue" style="width: 22%;"></div>
+                  <div class="aq-region-bar-seg aq-seg--red" style="width: 28%;"></div>
+                </div>
+                <span class="aq-region-val">2,400</span>
               </div>
-              <span class="aq-region-val">1,600</span>
-            </div>
-
-            <!-- Region 4: Asia Pacific (800) -->
-            <div class="aq-region-row">
-              <span class="aq-region-name">Asia Pacific</span>
-              <div class="aq-region-bar-track">
-                <div class="aq-region-bar-seg aq-seg--green" style="width: 24%;"></div>
-                <div class="aq-region-bar-seg aq-seg--blue" style="width: 24%;"></div>
-                <div class="aq-region-bar-seg aq-seg--red" style="width: 34%;"></div>
+              <div class="aq-region-row">
+                <span class="aq-region-name">North Europe</span>
+                <div class="aq-region-bar-track">
+                  <div class="aq-region-bar-seg aq-seg--green" style="width: 35%;"></div>
+                  <div class="aq-region-bar-seg aq-seg--blue" style="width: 28%;"></div>
+                  <div class="aq-region-bar-seg aq-seg--red" style="width: 19%;"></div>
+                </div>
+                <span class="aq-region-val">1,600</span>
               </div>
-              <span class="aq-region-val">800</span>
+              <div class="aq-region-row">
+                <span class="aq-region-name">Asia Pacific</span>
+                <div class="aq-region-bar-track">
+                  <div class="aq-region-bar-seg aq-seg--green" style="width: 24%;"></div>
+                  <div class="aq-region-bar-seg aq-seg--blue" style="width: 24%;"></div>
+                  <div class="aq-region-bar-seg aq-seg--red" style="width: 34%;"></div>
+                </div>
+                <span class="aq-region-val">800</span>
+              </div>
             </div>
           </div>
 
@@ -2555,37 +2562,37 @@
           </div>
           <div class="aq-cust-profile">
             <div class="aq-cust-logo">
-              <span>Coca-Cola</span>
+              <span>{{ (vm.currentAction.customer_info && vm.currentAction.customer_info.name) || vm.currentAction.customer || 'Coca-Cola' }}</span>
             </div>
             <div class="aq-cust-header-meta">
-              <h4 class="aq-cust-name">Coca-Cola</h4>
-              <p class="aq-cust-type">Strategic Customer | Global</p>
+              <h4 class="aq-cust-name">{{ (vm.currentAction.customer_info && vm.currentAction.customer_info.name) || vm.currentAction.customer || 'Coca-Cola' }}</h4>
+              <p class="aq-cust-type">{{ (vm.currentAction.customer_info && vm.currentAction.customer_info.segment) || 'Strategic Customer | Global' }}</p>
             </div>
           </div>
           <div class="aq-cust-details">
             <div class="aq-cust-row">
               <span class="aq-cust-k">Account Owner</span>
-              <span class="aq-cust-v font-medium">Alex Johnson</span>
+              <span class="aq-cust-v font-medium">{{ (vm.currentAction.customer_info && vm.currentAction.customer_info.account_owner) || 'Alex Johnson' }}</span>
             </div>
             <div class="aq-cust-row">
               <span class="aq-cust-k">Customer Segment</span>
-              <span class="aq-cust-v font-medium">Strategic (Fortune 500)</span>
+              <span class="aq-cust-v font-medium">{{ (vm.currentAction.customer_info && vm.currentAction.customer_info.segment) || 'Strategic (Fortune 500)' }}</span>
             </div>
             <div class="aq-cust-row">
               <span class="aq-cust-k">Industry</span>
-              <span class="aq-cust-v font-medium">Beverages &amp; FMCG</span>
+              <span class="aq-cust-v font-medium">{{ (vm.currentAction.customer_info && vm.currentAction.customer_info.industry) || 'Beverages & FMCG' }}</span>
             </div>
             <div class="aq-cust-row">
               <span class="aq-cust-k">Regions</span>
-              <span class="aq-cust-v font-medium">West US, East US, Global</span>
+              <span class="aq-cust-v font-medium">{{ (vm.currentAction.customer_info && vm.currentAction.customer_info.regions) || vm.currentAction.region || 'West US, East US, Global' }}</span>
             </div>
             <div class="aq-cust-row">
               <span class="aq-cust-k">Deal Type</span>
-              <span class="aq-cust-v font-medium">New Analytics Platform</span>
+              <span class="aq-cust-v font-medium">{{ (vm.currentAction.customer_info && vm.currentAction.customer_info.deal_type) || vm.currentAction.title || 'New Analytics Platform' }}</span>
             </div>
             <div class="aq-cust-row">
               <span class="aq-cust-k">Target Go-Live</span>
-              <span class="aq-cust-v font-medium">Mar 2025</span>
+              <span class="aq-cust-v font-medium">{{ (vm.currentAction.customer_info && vm.currentAction.customer_info.target_go_live) || vm.currentAction.target_date || 'Mar 2025' }}</span>
             </div>
           </div>
           <div class="aq-cust-footer">
@@ -2624,7 +2631,19 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <!-- Dynamic workload rows from backend calculation -->
+                <tr ng-repeat="w in vm.currentAction.workloads">
+                  <td class="font-semibold">{{ w.name }}</td>
+                  <td class="muted">{{ w.desc }}</td>
+                  <td class="text-right">{{ w.requested_cores }}</td>
+                  <td class="text-right">{{ w.provider_supply }}</td>
+                  <td class="text-right">{{ w.eng_min }}</td>
+                  <td class="text-right font-semibold" ng-class="{'text-danger': w.gap !== '0'}">{{ w.gap }}</td>
+                  <td class="text-center"><span class="aq-status-pill aq-status-pill--{{ w.status_class }}">{{ w.status }}</span></td>
+                </tr>
+
+                <!-- Fallback when workloads array not yet populated -->
+                <tr ng-if="!vm.currentAction.workloads || !vm.currentAction.workloads.length">
                   <td class="font-semibold">Analytics Platform</td>
                   <td class="muted">Core analytics workload</td>
                   <td class="text-right">4,000</td>
@@ -2633,7 +2652,7 @@
                   <td class="text-right text-danger font-semibold">3,000</td>
                   <td class="text-center"><span class="aq-status-pill aq-status-pill--partial">Partial</span></td>
                 </tr>
-                <tr>
+                <tr ng-if="!vm.currentAction.workloads || !vm.currentAction.workloads.length">
                   <td class="font-semibold">Data Processing</td>
                   <td class="muted">Batch and ETL workloads</td>
                   <td class="text-right">2,000</td>
@@ -2642,7 +2661,7 @@
                   <td class="text-right text-danger font-semibold">1,500</td>
                   <td class="text-center"><span class="aq-status-pill aq-status-pill--partial">Partial</span></td>
                 </tr>
-                <tr>
+                <tr ng-if="!vm.currentAction.workloads || !vm.currentAction.workloads.length">
                   <td class="font-semibold">AI / ML Workloads</td>
                   <td class="muted">ML model training &amp; inference</td>
                   <td class="text-right">1,200</td>
@@ -2662,52 +2681,50 @@
             <h3 class="aq-detail-card__title">Signals Triggering This Request</h3>
           </div>
           <div class="aq-trigger-signals">
-            <!-- Signal 1: Customer Deal / Demand -->
-            <div class="aq-trigger-item">
-              <div class="aq-trigger-icon aq-trigger-icon--pink">
+            <!-- Dynamic triggering signals from backend calculation -->
+            <div class="aq-trigger-item" ng-if="vm.currentAction.triggering_signals && vm.currentAction.triggering_signals.length" ng-repeat="sig in vm.currentAction.triggering_signals">
+              <div class="aq-trigger-icon" ng-class="{'aq-trigger-icon--pink': sig.severity === 'high', 'aq-trigger-icon--blue': sig.severity === 'medium', 'aq-trigger-icon--amber': sig.severity === 'low'}">
                 <svg class="ic" aria-hidden="true"><use href="#i-pulse"/></svg>
               </div>
               <div class="aq-trigger-info">
-                <h4 class="aq-trigger-name">Customer Deal / Demand</h4>
-                <p class="aq-trigger-desc">Strategic customer agreement signed</p>
+                <h4 class="aq-trigger-name">{{ sig.name }}</h4>
+                <p class="aq-trigger-desc">{{ sig.desc }}</p>
               </div>
-              <span class="aq-prio-pill aq-prio-pill--high">High</span>
+              <span class="aq-prio-pill" ng-class="'aq-prio-pill--' + sig.severity">{{ sig.severity | uppercase }}</span>
             </div>
 
-            <!-- Signal 2: Product Launch -->
-            <div class="aq-trigger-item">
-              <div class="aq-trigger-icon aq-trigger-icon--blue">
-                <svg class="ic" aria-hidden="true"><use href="#i-flask"/></svg>
+            <!-- Fallback if not populated -->
+            <div ng-if="!vm.currentAction.triggering_signals || !vm.currentAction.triggering_signals.length">
+              <div class="aq-trigger-item">
+                <div class="aq-trigger-icon aq-trigger-icon--pink">
+                  <svg class="ic" aria-hidden="true"><use href="#i-pulse"/></svg>
+                </div>
+                <div class="aq-trigger-info">
+                  <h4 class="aq-trigger-name">Customer Deal / Demand</h4>
+                  <p class="aq-trigger-desc">Strategic customer agreement signed</p>
+                </div>
+                <span class="aq-prio-pill aq-prio-pill--high">High</span>
               </div>
-              <div class="aq-trigger-info">
-                <h4 class="aq-trigger-name">Product Launch</h4>
-                <p class="aq-trigger-desc">New analytics platform launch</p>
+              <div class="aq-trigger-item">
+                <div class="aq-trigger-icon aq-trigger-icon--blue">
+                  <svg class="ic" aria-hidden="true"><use href="#i-flask"/></svg>
+                </div>
+                <div class="aq-trigger-info">
+                  <h4 class="aq-trigger-name">Product Launch</h4>
+                  <p class="aq-trigger-desc">New analytics platform launch</p>
+                </div>
+                <span class="aq-prio-pill aq-prio-pill--high">High</span>
               </div>
-              <span class="aq-prio-pill aq-prio-pill--high">High</span>
-            </div>
-
-            <!-- Signal 3: Regional Demand -->
-            <div class="aq-trigger-item">
-              <div class="aq-trigger-icon aq-trigger-icon--amber">
-                <svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg>
+              <div class="aq-trigger-item">
+                <div class="aq-trigger-icon aq-trigger-icon--amber">
+                  <svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg>
+                </div>
+                <div class="aq-trigger-info">
+                  <h4 class="aq-trigger-name">Regional Demand</h4>
+                  <p class="aq-trigger-desc">Expansion in West US and East US</p>
+                </div>
+                <span class="aq-prio-pill aq-prio-pill--medium">Medium</span>
               </div>
-              <div class="aq-trigger-info">
-                <h4 class="aq-trigger-name">Regional Demand</h4>
-                <p class="aq-trigger-desc">Expansion in West US and East US</p>
-              </div>
-              <span class="aq-prio-pill aq-prio-pill--medium">Medium</span>
-            </div>
-
-            <!-- Signal 4: Engineering Dependency -->
-            <div class="aq-trigger-item">
-              <div class="aq-trigger-icon aq-trigger-icon--purple">
-                <svg class="ic" aria-hidden="true"><use href="#i-layers"/></svg>
-              </div>
-              <div class="aq-trigger-info">
-                <h4 class="aq-trigger-name">Engineering Dependency</h4>
-                <p class="aq-trigger-desc">Dependencies on SQL and Analysis Services</p>
-              </div>
-              <span class="aq-prio-pill aq-prio-pill--medium">Medium</span>
             </div>
           </div>
         </section>
@@ -2718,58 +2735,70 @@
             <h3 class="aq-detail-card__title">Key Dates</h3>
           </div>
           <div class="aq-timeline">
-            <!-- Timeline Item 1: Deal Signed (Completed) -->
-            <div class="aq-tl-item is-completed">
-              <div class="aq-tl-dot aq-tl-dot--green">
-                <svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-check"/></svg>
+            <!-- Dynamic timeline items from backend calculation -->
+            <div class="aq-tl-item" ng-if="vm.currentAction.key_dates && vm.currentAction.key_dates.length" ng-repeat="kd in vm.currentAction.key_dates" ng-class="{'is-completed': kd.status === 'completed', 'is-active': kd.status === 'current', 'is-pending': kd.status === 'upcoming'}">
+              <div class="aq-tl-dot" ng-class="{'aq-tl-dot--green': kd.status === 'completed', 'aq-tl-dot--active': kd.status === 'current', 'aq-tl-dot--pending': kd.status === 'upcoming'}">
+                <svg ng-if="kd.status === 'completed'" class="ic" width="12" height="12" aria-hidden="true"><use href="#i-check"/></svg>
+                <span ng-if="kd.status === 'current'" class="aq-tl-inner-dot"></span>
               </div>
-              <div class="aq-tl-line"></div>
+              <div class="aq-tl-line" ng-if="!$last"></div>
               <div class="aq-tl-content">
-                <span class="aq-tl-label">Deal Signed</span>
-                <span class="aq-tl-date">Jan 15, 2025</span>
+                <span class="aq-tl-label" ng-class="{'font-bold text-primary': kd.status === 'current', 'muted': kd.status === 'upcoming'}">{{ kd.label }}</span>
+                <span class="aq-tl-date" ng-class="{'font-medium': kd.status === 'current', 'muted': kd.status === 'upcoming'}">{{ kd.date }}</span>
               </div>
             </div>
 
-            <!-- Timeline Item 2: Capacity Planning Initiated (Completed) -->
-            <div class="aq-tl-item is-completed">
-              <div class="aq-tl-dot aq-tl-dot--blue">
-                <span class="aq-tl-inner-dot"></span>
+            <!-- Fallback if timeline not yet populated -->
+            <div ng-if="!vm.currentAction.key_dates || !vm.currentAction.key_dates.length">
+              <!-- Timeline Item 1: Deal Signed (Completed) -->
+              <div class="aq-tl-item is-completed">
+                <div class="aq-tl-dot aq-tl-dot--green">
+                  <svg class="ic" width="12" height="12" aria-hidden="true"><use href="#i-check"/></svg>
+                </div>
+                <div class="aq-tl-line"></div>
+                <div class="aq-tl-content">
+                  <span class="aq-tl-label">Deal Signed</span>
+                  <span class="aq-tl-date">Jan 15, 2025</span>
+                </div>
               </div>
-              <div class="aq-tl-line"></div>
-              <div class="aq-tl-content">
-                <span class="aq-tl-label">Capacity Planning Initiated</span>
-                <span class="aq-tl-date">Jan 20, 2025</span>
+              <!-- Timeline Item 2: Capacity Planning Initiated (Completed) -->
+              <div class="aq-tl-item is-completed">
+                <div class="aq-tl-dot aq-tl-dot--blue">
+                  <span class="aq-tl-inner-dot"></span>
+                </div>
+                <div class="aq-tl-line"></div>
+                <div class="aq-tl-content">
+                  <span class="aq-tl-label">Capacity Planning Initiated</span>
+                  <span class="aq-tl-date">Jan 20, 2025</span>
+                </div>
               </div>
-            </div>
-
-            <!-- Timeline Item 3: Initial Allocation (Active) -->
-            <div class="aq-tl-item is-active">
-              <div class="aq-tl-dot aq-tl-dot--active">
-                <span class="aq-tl-inner-dot"></span>
+              <!-- Timeline Item 3: Initial Allocation (Active) -->
+              <div class="aq-tl-item is-active">
+                <div class="aq-tl-dot aq-tl-dot--active">
+                  <span class="aq-tl-inner-dot"></span>
+                </div>
+                <div class="aq-tl-line"></div>
+                <div class="aq-tl-content">
+                  <span class="aq-tl-label font-bold text-primary">Initial Allocation</span>
+                  <span class="aq-tl-date font-medium">Feb 2025</span>
+                </div>
               </div>
-              <div class="aq-tl-line"></div>
-              <div class="aq-tl-content">
-                <span class="aq-tl-label font-bold text-primary">Initial Allocation</span>
-                <span class="aq-tl-date font-medium">Feb 2025</span>
+              <!-- Timeline Item 4: Next Phase (Planned) -->
+              <div class="aq-tl-item is-pending">
+                <div class="aq-tl-dot aq-tl-dot--pending"></div>
+                <div class="aq-tl-line"></div>
+                <div class="aq-tl-content">
+                  <span class="aq-tl-label muted">Next Phase (Planned)</span>
+                  <span class="aq-tl-date muted">Apr 2025</span>
+                </div>
               </div>
-            </div>
-
-            <!-- Timeline Item 4: Next Phase (Planned) -->
-            <div class="aq-tl-item is-pending">
-              <div class="aq-tl-dot aq-tl-dot--pending"></div>
-              <div class="aq-tl-line"></div>
-              <div class="aq-tl-content">
-                <span class="aq-tl-label muted">Next Phase (Planned)</span>
-                <span class="aq-tl-date muted">Apr 2025</span>
-              </div>
-            </div>
-
-            <!-- Timeline Item 5: Full Delivery (Target) -->
-            <div class="aq-tl-item is-pending">
-              <div class="aq-tl-dot aq-tl-dot--pending"></div>
-              <div class="aq-tl-content">
-                <span class="aq-tl-label muted">Full Delivery (Target)</span>
-                <span class="aq-tl-date muted">Jun 2025</span>
+              <!-- Timeline Item 5: Full Delivery (Target) -->
+              <div class="aq-tl-item is-pending">
+                <div class="aq-tl-dot aq-tl-dot--pending"></div>
+                <div class="aq-tl-content">
+                  <span class="aq-tl-label muted">Full Delivery (Target)</span>
+                  <span class="aq-tl-date muted">Jun 2025</span>
+                </div>
               </div>
             </div>
           </div>
