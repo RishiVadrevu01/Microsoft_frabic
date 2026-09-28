@@ -1,0 +1,214 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "records": [
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "reserved_by": "contoso-lakehouse",
+      "allocated_units": 1870,
+      "utilized_units": 1699,
+      "allocation_date": "2026-05-04",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "reserved_by": "contoso-warehouse",
+      "allocated_units": 2600,
+      "utilized_units": 2364,
+      "allocation_date": "2026-03-16",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "reserved_by": "contoso-realtime",
+      "allocated_units": 1410,
+      "utilized_units": 1256,
+      "allocation_date": "2026-01-26",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "reserved_by": "contoso-data-eng",
+      "allocated_units": 1820,
+      "utilized_units": 628,
+      "allocation_date": "2025-12-08",
+      "low_use_weeks": 14
+    },
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "reserved_by": "contoso-data-science",
+      "allocated_units": 840,
+      "utilized_units": 776,
+      "allocation_date": "2025-10-20",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "reserved_by": "contoso-platform",
+      "allocated_units": 800,
+      "utilized_units": 665,
+      "allocation_date": "2025-09-01",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "reserved_by": "contoso-search",
+      "allocated_units": 1210,
+      "utilized_units": 355,
+      "allocation_date": "2026-05-04",
+      "low_use_weeks": 20
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "reserved_by": "contoso-bi-archive",
+      "allocated_units": 800,
+      "utilized_units": 296,
+      "allocation_date": "2026-03-16",
+      "low_use_weeks": 16
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "reserved_by": "contoso-warehouse",
+      "allocated_units": 2410,
+      "utilized_units": 2010,
+      "allocation_date": "2026-01-26",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "reserved_by": "contoso-lakehouse",
+      "allocated_units": 1700,
+      "utilized_units": 1478,
+      "allocation_date": "2025-12-08",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "reserved_by": "contoso-realtime",
+      "allocated_units": 1280,
+      "utilized_units": 1064,
+      "allocation_date": "2025-10-20",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "reserved_by": "contoso-platform",
+      "allocated_units": 890,
+      "utilized_units": 709,
+      "allocation_date": "2025-09-01",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "reserved_by": "contoso-foundation-models",
+      "allocated_units": 1530,
+      "utilized_units": 1389,
+      "allocation_date": "2026-05-04",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "reserved_by": "contoso-fine-tuning",
+      "allocated_units": 960,
+      "utilized_units": 833,
+      "allocation_date": "2026-03-16",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "reserved_by": "contoso-research",
+      "allocated_units": 1060,
+      "utilized_units": 556,
+      "allocation_date": "2026-01-26",
+      "low_use_weeks": 9
+    },
+    {
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "reserved_by": "contoso-warehouse",
+      "allocated_units": 1810,
+      "utilized_units": 1536,
+      "allocation_date": "2026-05-04",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "reserved_by": "contoso-lakehouse",
+      "allocated_units": 1340,
+      "utilized_units": 1152,
+      "allocation_date": "2026-03-16",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "reserved_by": "contoso-realtime",
+      "allocated_units": 1020,
+      "utilized_units": 853,
+      "allocation_date": "2026-01-26",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "reserved_by": "contoso-platform",
+      "allocated_units": 610,
+      "utilized_units": 469,
+      "allocation_date": "2025-12-08",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "reserved_by": "contoso-data-eng",
+      "allocated_units": 590,
+      "utilized_units": 257,
+      "allocation_date": "2025-10-20",
+      "low_use_weeks": 10
+    },
+    {
+      "pool_id": "pool-japaneast-01-gpu-l40s",
+      "reserved_by": "contoso-vision-inference",
+      "allocated_units": 1140,
+      "utilized_units": 952,
+      "allocation_date": "2026-05-04",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-japaneast-01-gpu-l40s",
+      "reserved_by": "contoso-copilot-serving",
+      "allocated_units": 970,
+      "utilized_units": 846,
+      "allocation_date": "2026-03-16",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-japaneast-01-gpu-l40s",
+      "reserved_by": "contoso-batch-scoring",
+      "allocated_units": 410,
+      "utilized_units": 317,
+      "allocation_date": "2026-01-26",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-brazilsouth-01-amd-genoa",
+      "reserved_by": "contoso-warehouse",
+      "allocated_units": 920,
+      "utilized_units": 766,
+      "allocation_date": "2026-05-04",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-brazilsouth-01-amd-genoa",
+      "reserved_by": "contoso-lakehouse",
+      "allocated_units": 800,
+      "utilized_units": 670,
+      "allocation_date": "2026-03-16",
+      "low_use_weeks": 0
+    },
+    {
+      "pool_id": "pool-brazilsouth-01-amd-genoa",
+      "reserved_by": "contoso-platform",
+      "allocated_units": 620,
+      "utilized_units": 479,
+      "allocation_date": "2026-01-26",
+      "low_use_weeks": 0
+    }
+  ]
+}

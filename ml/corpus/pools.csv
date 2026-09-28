@@ -1,0 +1,7 @@
+pool_id,region,region_label,geo,sku_id,sku_class,workload_type,capacity_units,time_zone,utc_offset_standard,daylight_saving
+pool-eastus-01-intel-icx,eastus,East US,north-america,FAB-INTEL-ICX-64,general-compute-intel,general-compute,9600,America/New_York,-5,US
+pool-westeurope-01-amd-genoa,westeurope,West Europe,europe,FAB-AMD-GENOA-96,general-compute-amd,general-compute,12288,Europe/Amsterdam,1,EU
+pool-westeurope-02-gpu-h100,westeurope,West Europe,europe,FAB-GPU-H100-8,gpu-training,ai-training,4608,Europe/Amsterdam,1,EU
+pool-southeastasia-01-amd-genoa,southeastasia,Southeast Asia,asia-pacific,FAB-AMD-GENOA-96,general-compute-amd,general-compute,7680,Asia/Singapore,8,none
+pool-japaneast-01-gpu-l40s,japaneast,Japan East,asia-pacific,FAB-GPU-L40S-8,gpu-inference,ai-inference,3840,Asia/Tokyo,9,none
+pool-brazilsouth-01-amd-genoa,brazilsouth,Brazil South,latin-america,FAB-AMD-GENOA-96,general-compute-amd,general-compute,3072,America/Sao_Paulo,-3,none

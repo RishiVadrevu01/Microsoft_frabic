@@ -1,0 +1,154 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "records": [
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "datacenter_id": "dc-eus-2",
+      "region": "eastus",
+      "region_label": "East US",
+      "geo": "north-america",
+      "lat": 36.7,
+      "lon": -78.4,
+      "sku_id": "FAB-INTEL-ICX-64",
+      "sku_class": "general-compute-intel",
+      "workload_type": "general-compute",
+      "capacity_units": 9600,
+      "rack_count": 50,
+      "segments": [
+        {
+          "segment_id": "eus-fabric-1",
+          "units": 4800
+        },
+        {
+          "segment_id": "eus-fabric-2",
+          "units": 4800
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "datacenter_id": "dc-weu-1",
+      "region": "westeurope",
+      "region_label": "West Europe",
+      "geo": "europe",
+      "lat": 52.4,
+      "lon": 4.9,
+      "sku_id": "FAB-AMD-GENOA-96",
+      "sku_class": "general-compute-amd",
+      "workload_type": "general-compute",
+      "capacity_units": 12288,
+      "rack_count": 64,
+      "segments": [
+        {
+          "segment_id": "weu-fabric-1",
+          "units": 6144
+        },
+        {
+          "segment_id": "weu-fabric-2",
+          "units": 6144
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "datacenter_id": "dc-weu-2",
+      "region": "westeurope",
+      "region_label": "West Europe",
+      "geo": "europe",
+      "lat": 52.4,
+      "lon": 4.9,
+      "sku_id": "FAB-GPU-H100-8",
+      "sku_class": "gpu-training",
+      "workload_type": "ai-training",
+      "capacity_units": 4608,
+      "rack_count": 48,
+      "segments": [
+        {
+          "segment_id": "weu-gpu-1",
+          "units": 2304
+        },
+        {
+          "segment_id": "weu-gpu-2",
+          "units": 2304
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "datacenter_id": "dc-sea-1",
+      "region": "southeastasia",
+      "region_label": "Southeast Asia",
+      "geo": "asia-pacific",
+      "lat": 1.3,
+      "lon": 103.8,
+      "sku_id": "FAB-AMD-GENOA-96",
+      "sku_class": "general-compute-amd",
+      "workload_type": "general-compute",
+      "capacity_units": 7680,
+      "rack_count": 40,
+      "segments": [
+        {
+          "segment_id": "sea-fabric-1",
+          "units": 3072
+        },
+        {
+          "segment_id": "sea-fabric-2",
+          "units": 1536
+        },
+        {
+          "segment_id": "sea-fabric-3",
+          "units": 3072
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-japaneast-01-gpu-l40s",
+      "datacenter_id": "dc-jpe-1",
+      "region": "japaneast",
+      "region_label": "Japan East",
+      "geo": "asia-pacific",
+      "lat": 35.7,
+      "lon": 139.7,
+      "sku_id": "FAB-GPU-L40S-8",
+      "sku_class": "gpu-inference",
+      "workload_type": "ai-inference",
+      "capacity_units": 3840,
+      "rack_count": 40,
+      "segments": [
+        {
+          "segment_id": "jpe-gpu-1",
+          "units": 1920
+        },
+        {
+          "segment_id": "jpe-gpu-2",
+          "units": 1920
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-brazilsouth-01-amd-genoa",
+      "datacenter_id": "dc-brs-1",
+      "region": "brazilsouth",
+      "region_label": "Brazil South",
+      "geo": "latin-america",
+      "lat": -23.5,
+      "lon": -46.6,
+      "sku_id": "FAB-AMD-GENOA-96",
+      "sku_class": "general-compute-amd",
+      "workload_type": "general-compute",
+      "capacity_units": 3072,
+      "rack_count": 16,
+      "segments": [
+        {
+          "segment_id": "brs-fabric-1",
+          "units": 1536
+        },
+        {
+          "segment_id": "brs-fabric-2",
+          "units": 1536
+        }
+      ]
+    }
+  ]
+}

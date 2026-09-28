@@ -1,0 +1,24 @@
+{
+  "name": "fabric-capacity-poc-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Microsoft Fabric capacity planning POC lab: synthetic estate, the 14 capacity-planning funnels, one planning horizon, a human approval loop and a guided hands-on lab. Node built-ins only.",
+  "license": "UNLICENSED",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server/index.js",
+    "demo": "node scripts/demo.js",
+    "seed": "node data/seed.js",
+    "reset": "node scripts/reset.js",
+    "test": "node --test \"test/*.test.js\"",
+    "verify:ui": "node scripts/verify-ui.js",
+    "docs": "node scripts/make-docs.js",
+    "golden": "node scripts/make-golden.js",
+    "worldmap": "node scripts/make-worldmap.js",
+    "corpus": "node ml/make-corpus.js",
+    "ml:setup": "node scripts/ml.js setup",
+    "ml:train": "node scripts/ml.js train",
+    "peak-profile": "node scripts/ml.js peak-profile",
+    "ml": "node scripts/ml.js all"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "records": [
+    {
+      "event_id": "EVT-S01",
+      "signal": "seasonal",
+      "scope": {
+        "pool_id": "pool-japaneast-01-gpu-l40s"
+      },
+      "date": "2027-04-05",
+      "duration_weeks": 3,
+      "uplift_pct": 0.45,
+      "confidence": 0.8,
+      "title": "Contoso AI Summit launch",
+      "detail": "Product launch calendar: inference traffic is expected to spike for about three weeks."
+    },
+    {
+      "event_id": "EVT-S02",
+      "signal": "seasonal",
+      "scope": {
+        "pool_id": "pool-westeurope-01-amd-genoa"
+      },
+      "date": "2026-12-14",
+      "duration_weeks": 2,
+      "uplift_pct": 0.2,
+      "confidence": 0.9,
+      "title": "Year-end reporting peak",
+      "detail": "Historical curve: finance workloads peak in the last two weeks of the year."
+    },
+    {
+      "event_id": "EVT-T01",
+      "signal": "strategic",
+      "scope": {
+        "sku_class": "general-compute-amd"
+      },
+      "date": "2027-03-15",
+      "effect": "hardware-gen",
+      "confidence": 0.9,
+      "title": "Next-generation AMD SKU available",
+      "detail": "Orders placed after this date can target FAB-AMD-GEN6-128 at 25% more capacity per unit."
+    },
+    {
+      "event_id": "EVT-T02",
+      "signal": "strategic",
+      "scope": {
+        "pool_id": "pool-brazilsouth-01-amd-genoa"
+      },
+      "date": "2027-02-01",
+      "effect": "demand",
+      "magnitude_cu": 250,
+      "confidence": 0.7,
+      "title": "Brazil South sovereign features GA",
+      "detail": "Region roadmap: general availability of in-region sovereign controls brings new tenants."
+    },
+    {
+      "event_id": "EVT-C01",
+      "signal": "competitive",
+      "scope": {
+        "region": "japaneast"
+      },
+      "date": "2026-09-09",
+      "confidence": 0.4,
+      "title": "Competitor announces inference price cut",
+      "detail": "Account-team intel, unverified: customers may shift batch inference between clouds."
+    },
+    {
+      "event_id": "EVT-X01",
+      "signal": "technology-shift",
+      "scope": {
+        "sku_class_group": "gpu"
+      },
+      "date": "2027-06-30",
+      "confidence": 0.75,
+      "title": "Estate mix shifting toward AI",
+      "detail": "Workload-mix trend: GPU share of estate demand rising from 22% to 35% over twelve months.",
+      "from_share": 0.22,
+      "to_share": 0.35
+    },
+    {
+      "event_id": "EVT-G01",
+      "signal": "geopolitical",
+      "scope": {
+        "pool_id": "pool-brazilsouth-01-amd-genoa"
+      },
+      "date": "2027-08-01",
+      "effect": "relocate-in",
+      "magnitude_cu": 900,
+      "confidence": 1,
+      "title": "Data-residency mandate takes effect",
+      "detail": "Regulatory tracker: regulated workloads must be hosted in-region; about 900 CU relocates into this pool."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "records": [
+    {
+      "contract_id": "CON-0101",
+      "customer": "Litware Global (enterprise agreement)",
+      "pool_id": "pool-eastus-01-intel-icx",
+      "committed_cu": 2000,
+      "provisioned_cu": 1700,
+      "effective_date": "2027-01-04",
+      "term_months": 36,
+      "hard": true
+    },
+    {
+      "contract_id": "CON-0203",
+      "customer": "Fabrikam AI Labs (committed-use)",
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "committed_cu": 1600,
+      "provisioned_cu": 400,
+      "effective_date": "2027-02-15",
+      "term_months": 24,
+      "hard": true
+    },
+    {
+      "contract_id": "CON-0304",
+      "customer": "Adatum Corporation (enterprise agreement)",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "committed_cu": 900,
+      "provisioned_cu": 700,
+      "effective_date": "2026-12-01",
+      "term_months": 36,
+      "hard": true
+    }
+  ]
+}

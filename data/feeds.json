@@ -1,0 +1,97 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "records": [
+    {
+      "feed_id": "telemetry-utilization",
+      "name": "Utilization telemetry",
+      "owner_team": "Fabric SRE",
+      "cadence_days": 7,
+      "last_delivered": "2026-09-19"
+    },
+    {
+      "feed_id": "telemetry-performance",
+      "name": "Latency and queue telemetry",
+      "owner_team": "Fabric SRE",
+      "cadence_days": 7,
+      "last_delivered": "2026-09-18"
+    },
+    {
+      "feed_id": "incident-log",
+      "name": "Incident and SEV log",
+      "owner_team": "Fabric SRE",
+      "cadence_days": 1,
+      "last_delivered": "2026-09-20"
+    },
+    {
+      "feed_id": "service-dependency-map",
+      "name": "Service dependency map",
+      "owner_team": "Service architecture",
+      "cadence_days": 30,
+      "last_delivered": "2026-09-09"
+    },
+    {
+      "feed_id": "power-carbon",
+      "name": "Power and carbon accounting",
+      "owner_team": "Datacenter operations",
+      "cadence_days": 30,
+      "last_delivered": "2026-09-01"
+    },
+    {
+      "feed_id": "vendor-lead-times",
+      "name": "Vendor lead times and risk",
+      "owner_team": "Supply chain",
+      "cadence_days": 14,
+      "last_delivered": "2026-09-15"
+    },
+    {
+      "feed_id": "security-notices",
+      "name": "Vendor security and end-of-support notices",
+      "owner_team": "Hardware security engineering",
+      "cadence_days": 30,
+      "last_delivered": "2026-09-12"
+    },
+    {
+      "feed_id": "launch-calendar",
+      "name": "Launch and seasonal calendar",
+      "owner_team": "Product marketing ops",
+      "cadence_days": 14,
+      "last_delivered": "2026-09-16"
+    },
+    {
+      "feed_id": "hardware-roadmap",
+      "name": "Hardware and region roadmap",
+      "owner_team": "Hardware engineering PM",
+      "cadence_days": 30,
+      "last_delivered": "2026-09-03"
+    },
+    {
+      "feed_id": "market-intel",
+      "name": "Market and competitor intel",
+      "owner_team": "Product marketing ops",
+      "cadence_days": 14,
+      "last_delivered": "2026-08-11"
+    },
+    {
+      "feed_id": "contracts-register",
+      "name": "Enterprise agreement register",
+      "owner_team": "Commercial operations",
+      "cadence_days": 30,
+      "last_delivered": "2026-09-11"
+    },
+    {
+      "feed_id": "regulatory-tracker",
+      "name": "Regulatory and trade tracker",
+      "owner_team": "Legal and regulatory affairs",
+      "cadence_days": 30,
+      "last_delivered": "2026-09-06"
+    },
+    {
+      "feed_id": "lifecycle-catalogue",
+      "name": "SKU lifecycle catalogue",
+      "owner_team": "Hardware engineering PM",
+      "cadence_days": 30,
+      "last_delivered": "2026-09-07"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "as_of": "2026-09-21",
+  "history_weeks": 52,
+  "notice": "All data in this folder is synthetic. It mirrors the structure of a capacity-planning estate; it is not Microsoft data."
+}

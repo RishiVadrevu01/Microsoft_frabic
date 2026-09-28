@@ -1,0 +1,100 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "policy_version": "2026.09.0",
+  "approved_by": "awaits review (synthetic lab policy, not a Microsoft policy)",
+  "floor_pct": {
+    "general": 0.85,
+    "gpu": 0.8
+  },
+  "cover_weeks": 26,
+  "buffer_pct": 0.1,
+  "due_soon_weeks": 4,
+  "plan_weeks": 26,
+  "horizons_weeks": [
+    13,
+    26,
+    52
+  ],
+  "forecast": {
+    "window_weeks": 26,
+    "backtest_horizon_weeks": 8,
+    "holt_margin": 0.1,
+    "p_upper_z": 0.8416
+  },
+  "pipeline": {
+    "overlap_discount": 0.25
+  },
+  "lead_time": {
+    "default_weeks": 16,
+    "observed_min_samples": 3,
+    "vendor_risk_flag": 0.5,
+    "vendor_risk_buffer_weeks": 4
+  },
+  "reliability": {
+    "window_days": 90,
+    "weights": {
+      "1": 8,
+      "2": 4,
+      "3": 1.5,
+      "4": 0.5
+    },
+    "flag_score": 12,
+    "critical_score": 24,
+    "replace_within_weeks": {
+      "critical": 22,
+      "high": 30
+    }
+  },
+  "performance": {
+    "latency_ratio_flag": 1.3,
+    "latency_ratio_high": 1.6,
+    "queue_ratio_flag": 0.8,
+    "knee_margin": 0.03
+  },
+  "cost": {
+    "low_use_ratio": 0.5,
+    "low_use_weeks": 8,
+    "keep_margin": 0.25,
+    "flag_share_of_usable": 0.05
+  },
+  "dependency": {
+    "tier1_min": 3
+  },
+  "sustainability": {
+    "target_gco2_per_cu_hour": 150
+  },
+  "security": {
+    "horizon_weeks": 52,
+    "migration_weeks": 12
+  },
+  "seasonal": {
+    "horizon_weeks": 52
+  },
+  "feeds": {
+    "stale_multiplier": 2
+  },
+  "overview": {
+    "region_watch": 0.8,
+    "region_at_risk": 0.95,
+    "compare_weeks": 13
+  },
+  "demand_severity_weeks": {
+    "critical": 13,
+    "high": 26,
+    "medium": 52
+  },
+  "decisions": {
+    "blocked_deciders": [
+      "engine",
+      "system",
+      "planner-engine",
+      "capacity-planner-engine"
+    ]
+  },
+  "approval": {
+    "budget_usd": 8000000,
+    "budget_label": "FY27 Q2 capacity budget (synthetic)",
+    "second_approver_above_usd": 1500000
+  }
+}

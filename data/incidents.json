@@ -1,0 +1,206 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "records": [
+    {
+      "incident_id": "INC-0001",
+      "pool_id": "pool-eastus-01-intel-icx",
+      "sku_id": "FAB-INTEL-ICX-64",
+      "fabric_segment": "eus-fabric-1",
+      "severity": 3,
+      "opened_on": "2026-08-30",
+      "mttr_hours": 4.5,
+      "title": "Elevated queue wait on scheduler"
+    },
+    {
+      "incident_id": "INC-0002",
+      "pool_id": "pool-eastus-01-intel-icx",
+      "sku_id": "FAB-INTEL-ICX-64",
+      "fabric_segment": "eus-fabric-2",
+      "severity": 3,
+      "opened_on": "2026-08-01",
+      "mttr_hours": 3.2,
+      "title": "Node drain took longer than expected"
+    },
+    {
+      "incident_id": "INC-0003",
+      "pool_id": "pool-eastus-01-intel-icx",
+      "sku_id": "FAB-INTEL-ICX-64",
+      "fabric_segment": "eus-fabric-1",
+      "severity": 4,
+      "opened_on": "2026-07-13",
+      "mttr_hours": 1,
+      "title": "Transient metrics gap"
+    },
+    {
+      "incident_id": "INC-0004",
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "weu-fabric-1",
+      "severity": 4,
+      "opened_on": "2026-08-12",
+      "mttr_hours": 1.4,
+      "title": "Single node reboot"
+    },
+    {
+      "incident_id": "INC-0005",
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "sku_id": "FAB-GPU-H100-8",
+      "fabric_segment": "weu-gpu-1",
+      "severity": 3,
+      "opened_on": "2026-08-22",
+      "mttr_hours": 5,
+      "title": "GPU driver reset on two nodes"
+    },
+    {
+      "incident_id": "INC-0006",
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "sku_id": "FAB-GPU-H100-8",
+      "fabric_segment": "weu-gpu-2",
+      "severity": 3,
+      "opened_on": "2026-07-19",
+      "mttr_hours": 3.8,
+      "title": "Interconnect flap"
+    },
+    {
+      "incident_id": "INC-0007",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "sea-fabric-2",
+      "severity": 1,
+      "opened_on": "2026-09-15",
+      "mttr_hours": 9.5,
+      "title": "Storage fabric brownout, customer-visible"
+    },
+    {
+      "incident_id": "INC-0008",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "sea-fabric-2",
+      "severity": 1,
+      "opened_on": "2026-08-25",
+      "mttr_hours": 11,
+      "title": "Top-of-rack switch failure cascade"
+    },
+    {
+      "incident_id": "INC-0009",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "sea-fabric-2",
+      "severity": 2,
+      "opened_on": "2026-09-12",
+      "mttr_hours": 6,
+      "title": "Packet loss between racks"
+    },
+    {
+      "incident_id": "INC-0010",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "sea-fabric-2",
+      "severity": 2,
+      "opened_on": "2026-09-02",
+      "mttr_hours": 7.2,
+      "title": "Repeated node fencing"
+    },
+    {
+      "incident_id": "INC-0011",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "sea-fabric-2",
+      "severity": 2,
+      "opened_on": "2026-08-08",
+      "mttr_hours": 5.5,
+      "title": "Firmware rollback"
+    },
+    {
+      "incident_id": "INC-0012",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "sea-fabric-2",
+      "severity": 3,
+      "opened_on": "2026-09-09",
+      "mttr_hours": 3,
+      "title": "Cooling alarm on two racks"
+    },
+    {
+      "incident_id": "INC-0013",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "sea-fabric-2",
+      "severity": 3,
+      "opened_on": "2026-08-19",
+      "mttr_hours": 4,
+      "title": "Disk failure burst"
+    },
+    {
+      "incident_id": "INC-0014",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "sea-fabric-2",
+      "severity": 3,
+      "opened_on": "2026-07-31",
+      "mttr_hours": 2.5,
+      "title": "Slow boot on new nodes"
+    },
+    {
+      "incident_id": "INC-0015",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "sea-fabric-2",
+      "severity": 3,
+      "opened_on": "2026-07-08",
+      "mttr_hours": 3.5,
+      "title": "Power supply swap"
+    },
+    {
+      "incident_id": "INC-0016",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "sea-fabric-2",
+      "severity": 4,
+      "opened_on": "2026-09-06",
+      "mttr_hours": 1,
+      "title": "Telemetry agent crash"
+    },
+    {
+      "incident_id": "INC-0017",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "sea-fabric-1",
+      "severity": 4,
+      "opened_on": "2026-07-23",
+      "mttr_hours": 1.2,
+      "title": "Single node reboot"
+    },
+    {
+      "incident_id": "INC-0018",
+      "pool_id": "pool-japaneast-01-gpu-l40s",
+      "sku_id": "FAB-GPU-L40S-8",
+      "fabric_segment": "jpe-gpu-1",
+      "severity": 3,
+      "opened_on": "2026-09-03",
+      "mttr_hours": 4,
+      "title": "Inference queue backlog"
+    },
+    {
+      "incident_id": "INC-0019",
+      "pool_id": "pool-japaneast-01-gpu-l40s",
+      "sku_id": "FAB-GPU-L40S-8",
+      "fabric_segment": "jpe-gpu-2",
+      "severity": 3,
+      "opened_on": "2026-07-25",
+      "mttr_hours": 3.5,
+      "title": "Model server OOM on burst"
+    },
+    {
+      "incident_id": "INC-0020",
+      "pool_id": "pool-brazilsouth-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "fabric_segment": "brs-fabric-1",
+      "severity": 4,
+      "opened_on": "2026-08-15",
+      "mttr_hours": 1.1,
+      "title": "Single node reboot"
+    }
+  ]
+}

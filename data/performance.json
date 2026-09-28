@@ -1,0 +1,54 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "records": [
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "p95_latency_ms": 224,
+      "p95_baseline_ms": 200,
+      "queue_depth_p95": 18,
+      "queue_depth_limit": 60,
+      "knee_util_pct": 0.88
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "p95_latency_ms": 141,
+      "p95_baseline_ms": 140,
+      "queue_depth_p95": 6,
+      "queue_depth_limit": 60,
+      "knee_util_pct": 0.9
+    },
+    {
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "p95_latency_ms": 331,
+      "p95_baseline_ms": 280,
+      "queue_depth_p95": 12,
+      "queue_depth_limit": 40,
+      "knee_util_pct": 0.85
+    },
+    {
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "p95_latency_ms": 262,
+      "p95_baseline_ms": 205,
+      "queue_depth_p95": 31,
+      "queue_depth_limit": 60,
+      "knee_util_pct": 0.86
+    },
+    {
+      "pool_id": "pool-japaneast-01-gpu-l40s",
+      "p95_latency_ms": 178,
+      "p95_baseline_ms": 125,
+      "queue_depth_p95": 27,
+      "queue_depth_limit": 40,
+      "knee_util_pct": 0.82
+    },
+    {
+      "pool_id": "pool-brazilsouth-01-amd-genoa",
+      "p95_latency_ms": 167,
+      "p95_baseline_ms": 160,
+      "queue_depth_p95": 7,
+      "queue_depth_limit": 60,
+      "knee_util_pct": 0.88
+    }
+  ]
+}

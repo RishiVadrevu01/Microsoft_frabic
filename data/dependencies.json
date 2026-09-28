@@ -1,0 +1,102 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "records": [
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "failover_pool_id": null,
+      "critical_services": [
+        {
+          "name": "Lakehouse control plane",
+          "tier": 1
+        },
+        {
+          "name": "OneLake gateway",
+          "tier": 1
+        },
+        {
+          "name": "Capacity metrics service",
+          "tier": 1
+        },
+        {
+          "name": "Notebook runtime",
+          "tier": 2
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "failover_pool_id": null,
+      "critical_services": [
+        {
+          "name": "Warehouse engine",
+          "tier": 1
+        },
+        {
+          "name": "BI semantic models",
+          "tier": 2
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "failover_pool_id": null,
+      "critical_services": [
+        {
+          "name": "Model training scheduler",
+          "tier": 1
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "failover_pool_id": null,
+      "critical_services": [
+        {
+          "name": "Regional control plane",
+          "tier": 1
+        },
+        {
+          "name": "Warehouse engine",
+          "tier": 1
+        },
+        {
+          "name": "Real-time ingestion",
+          "tier": 1
+        },
+        {
+          "name": "OneLake gateway",
+          "tier": 1
+        },
+        {
+          "name": "Notebook runtime",
+          "tier": 2
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-japaneast-01-gpu-l40s",
+      "failover_pool_id": null,
+      "critical_services": [
+        {
+          "name": "Inference gateway",
+          "tier": 1
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-brazilsouth-01-amd-genoa",
+      "failover_pool_id": null,
+      "critical_services": [
+        {
+          "name": "Regional control plane",
+          "tier": 1
+        },
+        {
+          "name": "Warehouse engine",
+          "tier": 2
+        }
+      ]
+    }
+  ]
+}

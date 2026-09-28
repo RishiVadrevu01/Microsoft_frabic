@@ -1,0 +1,58 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "records": [
+    {
+      "vendor_id": "vendor-tailspin",
+      "name": "Tailspin Server Co.",
+      "sku_ids": [
+        "FAB-INTEL-SKX-48",
+        "FAB-INTEL-ICX-64"
+      ],
+      "quoted_lead_weeks": 16,
+      "observed_lead_weeks": [
+        17,
+        19,
+        18,
+        21
+      ],
+      "risk_score": 0.35
+    },
+    {
+      "vendor_id": "vendor-northwind",
+      "name": "Northwind Systems",
+      "sku_ids": [
+        "FAB-AMD-GENOA-96",
+        "FAB-AMD-GEN6-128"
+      ],
+      "quoted_lead_weeks": 14,
+      "observed_lead_weeks": [
+        15,
+        18,
+        17,
+        21,
+        19,
+        20
+      ],
+      "risk_score": 0.35
+    },
+    {
+      "vendor_id": "vendor-fabrikam",
+      "name": "Fabrikam Accelerated Systems",
+      "sku_ids": [
+        "FAB-GPU-V100-8",
+        "FAB-GPU-A100-8",
+        "FAB-GPU-H100-8",
+        "FAB-GPU-L40S-8"
+      ],
+      "quoted_lead_weeks": 16,
+      "observed_lead_weeks": [
+        17,
+        18,
+        17,
+        20
+      ],
+      "risk_score": 0.45
+    }
+  ]
+}

@@ -1,0 +1,466 @@
+{
+  "generated_with": {
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "python": "3.12.10",
+    "fast": false
+  },
+  "corpus": {
+    "generator_version": "2026.09.1",
+    "as_of": "2026-09-21",
+    "frequency": "1 hour",
+    "starts_utc": "2024-09-23T00:00:00Z",
+    "ends_before_utc": "2026-09-21T00:00:00Z",
+    "hours_per_pool": 17472,
+    "rows": 104832,
+    "files": {
+      "hourly_pool_metrics.csv": {
+        "rows": 104832,
+        "sha256": "aafa03b9dad7443a6afef6d2fc9b59d3398561fb1043013357c940a983e208c8"
+      },
+      "pools.csv": {
+        "rows": 6,
+        "sha256": "abaee59f6d87b1f0037b239b2a7de2dabb9170067758cbe12994a102f1da97d8"
+      },
+      "calendar_future.csv": {
+        "rows": 1152,
+        "sha256": "a718429dc1683d7f4c2a43ab179526bc28d4653afdf26a3628b6118be81570db"
+      }
+    }
+  },
+  "setup": {
+    "pools": 6,
+    "hours_per_pool": 17472,
+    "test_weeks": 8,
+    "validation_weeks": 3,
+    "horizons_trained": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      12,
+      18,
+      24,
+      30,
+      36,
+      48,
+      60,
+      72,
+      96,
+      120,
+      144,
+      168
+    ],
+    "forecast_horizon_hours": 168,
+    "quantiles": [
+      0.5,
+      0.8,
+      0.95
+    ],
+    "rows": {
+      "train": 536580,
+      "validation": 16536,
+      "test": 198576
+    },
+    "features": [
+      "lag0",
+      "lag1",
+      "lag2",
+      "lag3",
+      "lag5",
+      "lag11",
+      "lag23",
+      "lag47",
+      "lag71",
+      "lag167",
+      "lag335",
+      "roll6",
+      "roll24_mean",
+      "roll24_std",
+      "roll24_max",
+      "roll24_min",
+      "growth",
+      "o_hour",
+      "fullness",
+      "sn168",
+      "r2",
+      "r3",
+      "r4",
+      "prof4",
+      "sn_hol",
+      "prof_hol_n",
+      "last_same_hour",
+      "sn_hour_shift",
+      "t_hour",
+      "t_dow",
+      "t_hol",
+      "t_how",
+      "horizon",
+      "geo",
+      "workload",
+      "sku_class"
+    ],
+    "best_iterations": {
+      "p50": 204,
+      "p80": 204,
+      "p95": 152
+    },
+    "params": {
+      "objective": "quantile",
+      "metric": "quantile",
+      "learning_rate": 0.06,
+      "num_leaves": 63,
+      "min_data_in_leaf": 200,
+      "feature_fraction": 0.85,
+      "bagging_fraction": 0.8,
+      "bagging_freq": 1,
+      "lambda_l2": 1.0,
+      "max_bin": 255,
+      "verbosity": -1,
+      "seed": 7,
+      "deterministic": true,
+      "force_row_wise": true
+    },
+    "first_test_hour": 16128,
+    "leakage_check_passed": true
+  },
+  "test": {
+    "overall": {
+      "seasonal_naive": 0.03109761893419566,
+      "profile_4wk": 0.026417948155249126,
+      "lightgbm": 0.02278424110920101,
+      "mae_lightgbm": 90.67078164839909,
+      "n": 198576
+    },
+    "by_horizon": {
+      "1-6h": {
+        "seasonal_naive": 0.030725308080353782,
+        "profile_4wk": 0.024981522726685152,
+        "lightgbm": 0.016749840693955704,
+        "mae_lightgbm": 66.45571093854434,
+        "n": 7092
+      },
+      "7-24h": {
+        "seasonal_naive": 0.031106163412648682,
+        "profile_4wk": 0.025592497601703717,
+        "lightgbm": 0.021425509654906586,
+        "mae_lightgbm": 85.07301723652972,
+        "n": 21276
+      },
+      "25-72h": {
+        "seasonal_naive": 0.03110312788497831,
+        "profile_4wk": 0.02591775373417349,
+        "lightgbm": 0.022399164832482176,
+        "mae_lightgbm": 89.0328404199676,
+        "n": 56736
+      },
+      "73-168h": {
+        "seasonal_naive": 0.031116445911161614,
+        "profile_4wk": 0.0269110896826373,
+        "lightgbm": 0.023605771545414884,
+        "mae_lightgbm": 94.05277500920626,
+        "n": 113472
+      }
+    },
+    "by_pool": {
+      "pool-eastus-01-intel-icx": {
+        "seasonal_naive": 0.033072154357357365,
+        "profile_4wk": 0.027655676489934836,
+        "lightgbm": 0.020958260719000737,
+        "mae_lightgbm": 148.92865279316447,
+        "n": 33096
+      },
+      "pool-westeurope-01-amd-genoa": {
+        "seasonal_naive": 0.026718955853167237,
+        "profile_4wk": 0.023431139423710435,
+        "lightgbm": 0.022128156294430126,
+        "mae_lightgbm": 129.24737902382157,
+        "n": 33096
+      },
+      "pool-westeurope-02-gpu-h100": {
+        "seasonal_naive": 0.023960826751288942,
+        "profile_4wk": 0.020798271329325616,
+        "lightgbm": 0.019954617470001008,
+        "mae_lightgbm": 54.125744670823686,
+        "n": 33096
+      },
+      "pool-southeastasia-01-amd-genoa": {
+        "seasonal_naive": 0.03505164108356887,
+        "profile_4wk": 0.02884905665943103,
+        "lightgbm": 0.02425031937922664,
+        "mae_lightgbm": 103.12116171050737,
+        "n": 33096
+      },
+      "pool-japaneast-01-gpu-l40s": {
+        "seasonal_naive": 0.03653250467477812,
+        "profile_4wk": 0.03195156542048665,
+        "lightgbm": 0.03073347826425333,
+        "mae_lightgbm": 63.65238300352158,
+        "n": 33096
+      },
+      "pool-brazilsouth-01-amd-genoa": {
+        "seasonal_naive": 0.0325925354104302,
+        "profile_4wk": 0.02752358748506166,
+        "lightgbm": 0.023726233482444785,
+        "mae_lightgbm": 44.94936868855594,
+        "n": 33096
+      }
+    },
+    "calibration": {
+      "p80": {
+        "target": 0.8,
+        "scale": 1.0044486968470139,
+        "lightgbm": 0.8328700346466844,
+        "lightgbm_uncalibrated": 0.7930213117395859,
+        "profile_4wk": 0.7884135041495448,
+        "pinball_lightgbm": 0.008227151060382852,
+        "pinball_lightgbm_uncalibrated": 0.00817550302317691,
+        "pinball_profile_4wk": 0.008900576646491468
+      },
+      "p95": {
+        "target": 0.95,
+        "scale": 1.0043942109244395,
+        "lightgbm": 0.9481911207799533,
+        "lightgbm_uncalibrated": 0.930072113447748,
+        "profile_4wk": 0.9516608250745306,
+        "pinball_lightgbm": 0.003064908360047143,
+        "pinball_lightgbm_uncalibrated": 0.0030997055641631944,
+        "pinball_profile_4wk": 0.0032150691084792044
+      },
+      "by_horizon_p80": {
+        "1-6h": 0.8513818386914833,
+        "7-24h": 0.8316412859560067,
+        "25-72h": 0.8353955160744501,
+        "73-168h": 0.8306806965595037
+      }
+    },
+    "daily_peak": {
+      "wape_lightgbm": 0.022864130794664175,
+      "wape_profile_4wk": 0.02531926944468894,
+      "covered_by_p95": 0.892675852066715,
+      "n_days": 8274
+    }
+  },
+  "extras": {
+    "global_vs_per_pool": {
+      "pool-eastus-01-intel-icx": {
+        "per_pool_model": 0.02106453914092777,
+        "global_model": 0.020958260719000737
+      },
+      "pool-westeurope-01-amd-genoa": {
+        "per_pool_model": 0.023443231047476736,
+        "global_model": 0.022128156294430126
+      },
+      "pool-westeurope-02-gpu-h100": {
+        "per_pool_model": 0.020021242163798,
+        "global_model": 0.019954617470001008
+      },
+      "pool-southeastasia-01-amd-genoa": {
+        "per_pool_model": 0.025391018362100785,
+        "global_model": 0.02425031937922664
+      },
+      "pool-japaneast-01-gpu-l40s": {
+        "per_pool_model": 0.02943361049601497,
+        "global_model": 0.03073347826425333
+      },
+      "pool-brazilsouth-01-amd-genoa": {
+        "per_pool_model": 0.02544510029274835,
+        "global_model": 0.023726233482444785
+      }
+    },
+    "leave_one_pool_out": {
+      "pool-eastus-01-intel-icx": {
+        "unseen_pool_model": 0.02669131181586209,
+        "seen_pool_model": 0.020958260719000737,
+        "profile_4wk": 0.027655676489934836,
+        "others_share_its_workload": 3
+      },
+      "pool-westeurope-01-amd-genoa": {
+        "unseen_pool_model": 0.022414473302135505,
+        "seen_pool_model": 0.022128156294430126,
+        "profile_4wk": 0.023431139423710435,
+        "others_share_its_workload": 3
+      },
+      "pool-westeurope-02-gpu-h100": {
+        "unseen_pool_model": 0.021654076548551032,
+        "seen_pool_model": 0.019954617470001008,
+        "profile_4wk": 0.020798271329325616,
+        "others_share_its_workload": 0
+      },
+      "pool-southeastasia-01-amd-genoa": {
+        "unseen_pool_model": 0.024260306568388762,
+        "seen_pool_model": 0.02425031937922664,
+        "profile_4wk": 0.02884905665943103,
+        "others_share_its_workload": 3
+      },
+      "pool-japaneast-01-gpu-l40s": {
+        "unseen_pool_model": 0.04286122900121021,
+        "seen_pool_model": 0.03073347826425333,
+        "profile_4wk": 0.03195156542048665,
+        "others_share_its_workload": 0
+      },
+      "pool-brazilsouth-01-amd-genoa": {
+        "unseen_pool_model": 0.024290335460283728,
+        "seen_pool_model": 0.023726233482444785,
+        "profile_4wk": 0.02752358748506166,
+        "others_share_its_workload": 3
+      }
+    },
+    "funnel_signals": {
+      "validation_pinball_p50_calendar_and_lags": 0.01058373586594944,
+      "validation_pinball_p50_with_signals": 0.010499741904978741,
+      "used_signals": false,
+      "test_wape_calendar_and_lags": 0.022786059993381954,
+      "test_wape_with_signals": 0.022705378276000606
+    }
+  },
+  "feature_importance": [
+    {
+      "feature": "prof4",
+      "gain": 826560.702972889,
+      "share": 0.6148436850909261
+    },
+    {
+      "feature": "r2",
+      "gain": 114272.09651327133,
+      "share": 0.08500219847203432
+    },
+    {
+      "feature": "lag0",
+      "gain": 50640.07783317566,
+      "share": 0.03766902050418708
+    },
+    {
+      "feature": "horizon",
+      "gain": 37682.11354351044,
+      "share": 0.028030136770083754
+    },
+    {
+      "feature": "t_how",
+      "gain": 31676.48852443695,
+      "share": 0.02356280532700822
+    },
+    {
+      "feature": "growth",
+      "gain": 28829.212065696716,
+      "share": 0.021444836321140893
+    },
+    {
+      "feature": "t_hour",
+      "gain": 28754.02657365799,
+      "share": 0.021388909001073295
+    },
+    {
+      "feature": "fullness",
+      "gain": 22371.582847118378,
+      "share": 0.016641277996360757
+    },
+    {
+      "feature": "r3",
+      "gain": 19595.49590396881,
+      "share": 0.014576263872026238
+    },
+    {
+      "feature": "r4",
+      "gain": 18225.687546253204,
+      "share": 0.013557321142838885
+    },
+    {
+      "feature": "last_same_hour",
+      "gain": 15865.602583408356,
+      "share": 0.011801753366069314
+    },
+    {
+      "feature": "workload",
+      "gain": 15790.20619726181,
+      "share": 0.011745669170759582
+    },
+    {
+      "feature": "lag167",
+      "gain": 15221.265264034271,
+      "share": 0.011322457979220315
+    },
+    {
+      "feature": "t_hol",
+      "gain": 14454.654412269592,
+      "share": 0.010752208462839485
+    },
+    {
+      "feature": "roll24_mean",
+      "gain": 13509.938253879547,
+      "share": 0.010049473912188423
+    }
+  ],
+  "next_week": [
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "capacity_units": 9600.0,
+      "last_week_mean": 7388.0,
+      "next_week_mean_p50": 7408.846428571427,
+      "busiest_hour_p80": 8688.6,
+      "busiest_hour_p95": 8882.6,
+      "busiest_hour_p95_at_utc": "2026-09-22T17:00:00Z",
+      "busiest_hour_p95_local_hour": 13,
+      "busiest_hour_p95_share_of_capacity": 0.9252708333333334
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "capacity_units": 12288.0,
+      "last_week_mean": 5912.0,
+      "next_week_mean_p50": 5972.487499999999,
+      "busiest_hour_p80": 7002.9,
+      "busiest_hour_p95": 7212.9,
+      "busiest_hour_p95_at_utc": "2026-09-22T10:00:00Z",
+      "busiest_hour_p95_local_hour": 12,
+      "busiest_hour_p95_share_of_capacity": 0.5869873046874999
+    },
+    {
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "capacity_units": 4608.0,
+      "last_week_mean": 2778.0,
+      "next_week_mean_p50": 2786.2184523809524,
+      "busiest_hour_p80": 2941.0,
+      "busiest_hour_p95": 2988.6,
+      "busiest_hour_p95_at_utc": "2026-09-23T07:00:00Z",
+      "busiest_hour_p95_local_hour": 9,
+      "busiest_hour_p95_share_of_capacity": 0.6485677083333333
+    },
+    {
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "capacity_units": 7680.0,
+      "last_week_mean": 4267.0,
+      "next_week_mean_p50": 4238.683333333333,
+      "busiest_hour_p80": 4955.5,
+      "busiest_hour_p95": 5051.2,
+      "busiest_hour_p95_at_utc": "2026-09-22T05:00:00Z",
+      "busiest_hour_p95_local_hour": 13,
+      "busiest_hour_p95_share_of_capacity": 0.6577083333333333
+    },
+    {
+      "pool_id": "pool-japaneast-01-gpu-l40s",
+      "capacity_units": 3840.0,
+      "last_week_mean": 2115.0,
+      "next_week_mean_p50": 2120.9994047619048,
+      "busiest_hour_p80": 2465.8,
+      "busiest_hour_p95": 2540.0,
+      "busiest_hour_p95_at_utc": "2026-09-27T06:00:00Z",
+      "busiest_hour_p95_local_hour": 15,
+      "busiest_hour_p95_share_of_capacity": 0.6614583333333334
+    },
+    {
+      "pool_id": "pool-brazilsouth-01-amd-genoa",
+      "capacity_units": 3072.0,
+      "last_week_mean": 1915.0,
+      "next_week_mean_p50": 1921.4017857142858,
+      "busiest_hour_p80": 2292.2,
+      "busiest_hour_p95": 2349.5,
+      "busiest_hour_p95_at_utc": "2026-09-22T15:00:00Z",
+      "busiest_hour_p95_local_hour": 12,
+      "busiest_hour_p95_share_of_capacity": 0.7648111979166666
+    }
+  ],
+  "seconds": 149
+}

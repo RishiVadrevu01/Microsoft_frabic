@@ -1,0 +1,1284 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "records": [
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "series": [
+        {
+          "week_start": "2025-09-29",
+          "utilized_units": 4154
+        },
+        {
+          "week_start": "2025-10-06",
+          "utilized_units": 4158
+        },
+        {
+          "week_start": "2025-10-13",
+          "utilized_units": 4209
+        },
+        {
+          "week_start": "2025-10-20",
+          "utilized_units": 4317
+        },
+        {
+          "week_start": "2025-10-27",
+          "utilized_units": 4381
+        },
+        {
+          "week_start": "2025-11-03",
+          "utilized_units": 4369
+        },
+        {
+          "week_start": "2025-11-10",
+          "utilized_units": 4434
+        },
+        {
+          "week_start": "2025-11-17",
+          "utilized_units": 4471
+        },
+        {
+          "week_start": "2025-11-24",
+          "utilized_units": 4373
+        },
+        {
+          "week_start": "2025-12-01",
+          "utilized_units": 4541
+        },
+        {
+          "week_start": "2025-12-08",
+          "utilized_units": 4532
+        },
+        {
+          "week_start": "2025-12-15",
+          "utilized_units": 4507
+        },
+        {
+          "week_start": "2025-12-22",
+          "utilized_units": 4510
+        },
+        {
+          "week_start": "2025-12-29",
+          "utilized_units": 4539
+        },
+        {
+          "week_start": "2026-01-05",
+          "utilized_units": 4650
+        },
+        {
+          "week_start": "2026-01-12",
+          "utilized_units": 4736
+        },
+        {
+          "week_start": "2026-01-19",
+          "utilized_units": 4778
+        },
+        {
+          "week_start": "2026-01-26",
+          "utilized_units": 4824
+        },
+        {
+          "week_start": "2026-02-02",
+          "utilized_units": 4856
+        },
+        {
+          "week_start": "2026-02-09",
+          "utilized_units": 4868
+        },
+        {
+          "week_start": "2026-02-16",
+          "utilized_units": 4952
+        },
+        {
+          "week_start": "2026-02-23",
+          "utilized_units": 4892
+        },
+        {
+          "week_start": "2026-03-02",
+          "utilized_units": 4949
+        },
+        {
+          "week_start": "2026-03-09",
+          "utilized_units": 4973
+        },
+        {
+          "week_start": "2026-03-16",
+          "utilized_units": 4929
+        },
+        {
+          "week_start": "2026-03-23",
+          "utilized_units": 5053
+        },
+        {
+          "week_start": "2026-03-30",
+          "utilized_units": 5070
+        },
+        {
+          "week_start": "2026-04-06",
+          "utilized_units": 5199
+        },
+        {
+          "week_start": "2026-04-13",
+          "utilized_units": 5303
+        },
+        {
+          "week_start": "2026-04-20",
+          "utilized_units": 5431
+        },
+        {
+          "week_start": "2026-04-27",
+          "utilized_units": 5434
+        },
+        {
+          "week_start": "2026-05-04",
+          "utilized_units": 5602
+        },
+        {
+          "week_start": "2026-05-11",
+          "utilized_units": 5662
+        },
+        {
+          "week_start": "2026-05-18",
+          "utilized_units": 5696
+        },
+        {
+          "week_start": "2026-05-25",
+          "utilized_units": 5806
+        },
+        {
+          "week_start": "2026-06-01",
+          "utilized_units": 5999
+        },
+        {
+          "week_start": "2026-06-08",
+          "utilized_units": 6039
+        },
+        {
+          "week_start": "2026-06-15",
+          "utilized_units": 6090
+        },
+        {
+          "week_start": "2026-06-22",
+          "utilized_units": 6203
+        },
+        {
+          "week_start": "2026-06-29",
+          "utilized_units": 6281
+        },
+        {
+          "week_start": "2026-07-06",
+          "utilized_units": 6411
+        },
+        {
+          "week_start": "2026-07-13",
+          "utilized_units": 6548
+        },
+        {
+          "week_start": "2026-07-20",
+          "utilized_units": 6563
+        },
+        {
+          "week_start": "2026-07-27",
+          "utilized_units": 6636
+        },
+        {
+          "week_start": "2026-08-03",
+          "utilized_units": 6725
+        },
+        {
+          "week_start": "2026-08-10",
+          "utilized_units": 6893
+        },
+        {
+          "week_start": "2026-08-17",
+          "utilized_units": 7010
+        },
+        {
+          "week_start": "2026-08-24",
+          "utilized_units": 7029
+        },
+        {
+          "week_start": "2026-08-31",
+          "utilized_units": 7192
+        },
+        {
+          "week_start": "2026-09-07",
+          "utilized_units": 7285
+        },
+        {
+          "week_start": "2026-09-14",
+          "utilized_units": 7262
+        },
+        {
+          "week_start": "2026-09-21",
+          "utilized_units": 7388
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "series": [
+        {
+          "week_start": "2025-09-29",
+          "utilized_units": 5256
+        },
+        {
+          "week_start": "2025-10-06",
+          "utilized_units": 5360
+        },
+        {
+          "week_start": "2025-10-13",
+          "utilized_units": 5330
+        },
+        {
+          "week_start": "2025-10-20",
+          "utilized_units": 5365
+        },
+        {
+          "week_start": "2025-10-27",
+          "utilized_units": 5398
+        },
+        {
+          "week_start": "2025-11-03",
+          "utilized_units": 5429
+        },
+        {
+          "week_start": "2025-11-10",
+          "utilized_units": 5396
+        },
+        {
+          "week_start": "2025-11-17",
+          "utilized_units": 5407
+        },
+        {
+          "week_start": "2025-11-24",
+          "utilized_units": 5328
+        },
+        {
+          "week_start": "2025-12-01",
+          "utilized_units": 5288
+        },
+        {
+          "week_start": "2025-12-08",
+          "utilized_units": 5440
+        },
+        {
+          "week_start": "2025-12-15",
+          "utilized_units": 5332
+        },
+        {
+          "week_start": "2025-12-22",
+          "utilized_units": 5407
+        },
+        {
+          "week_start": "2025-12-29",
+          "utilized_units": 5449
+        },
+        {
+          "week_start": "2026-01-05",
+          "utilized_units": 5394
+        },
+        {
+          "week_start": "2026-01-12",
+          "utilized_units": 5484
+        },
+        {
+          "week_start": "2026-01-19",
+          "utilized_units": 5445
+        },
+        {
+          "week_start": "2026-01-26",
+          "utilized_units": 5401
+        },
+        {
+          "week_start": "2026-02-02",
+          "utilized_units": 5453
+        },
+        {
+          "week_start": "2026-02-09",
+          "utilized_units": 5277
+        },
+        {
+          "week_start": "2026-02-16",
+          "utilized_units": 5330
+        },
+        {
+          "week_start": "2026-02-23",
+          "utilized_units": 5378
+        },
+        {
+          "week_start": "2026-03-02",
+          "utilized_units": 5382
+        },
+        {
+          "week_start": "2026-03-09",
+          "utilized_units": 5399
+        },
+        {
+          "week_start": "2026-03-16",
+          "utilized_units": 5363
+        },
+        {
+          "week_start": "2026-03-23",
+          "utilized_units": 5410
+        },
+        {
+          "week_start": "2026-03-30",
+          "utilized_units": 5469
+        },
+        {
+          "week_start": "2026-04-06",
+          "utilized_units": 5404
+        },
+        {
+          "week_start": "2026-04-13",
+          "utilized_units": 5395
+        },
+        {
+          "week_start": "2026-04-20",
+          "utilized_units": 5466
+        },
+        {
+          "week_start": "2026-04-27",
+          "utilized_units": 5400
+        },
+        {
+          "week_start": "2026-05-04",
+          "utilized_units": 5382
+        },
+        {
+          "week_start": "2026-05-11",
+          "utilized_units": 5417
+        },
+        {
+          "week_start": "2026-05-18",
+          "utilized_units": 5476
+        },
+        {
+          "week_start": "2026-05-25",
+          "utilized_units": 5477
+        },
+        {
+          "week_start": "2026-06-01",
+          "utilized_units": 5561
+        },
+        {
+          "week_start": "2026-06-08",
+          "utilized_units": 5493
+        },
+        {
+          "week_start": "2026-06-15",
+          "utilized_units": 5613
+        },
+        {
+          "week_start": "2026-06-22",
+          "utilized_units": 5571
+        },
+        {
+          "week_start": "2026-06-29",
+          "utilized_units": 5684
+        },
+        {
+          "week_start": "2026-07-06",
+          "utilized_units": 5557
+        },
+        {
+          "week_start": "2026-07-13",
+          "utilized_units": 5637
+        },
+        {
+          "week_start": "2026-07-20",
+          "utilized_units": 5658
+        },
+        {
+          "week_start": "2026-07-27",
+          "utilized_units": 5739
+        },
+        {
+          "week_start": "2026-08-03",
+          "utilized_units": 5887
+        },
+        {
+          "week_start": "2026-08-10",
+          "utilized_units": 5832
+        },
+        {
+          "week_start": "2026-08-17",
+          "utilized_units": 5733
+        },
+        {
+          "week_start": "2026-08-24",
+          "utilized_units": 5771
+        },
+        {
+          "week_start": "2026-08-31",
+          "utilized_units": 5808
+        },
+        {
+          "week_start": "2026-09-07",
+          "utilized_units": 5928
+        },
+        {
+          "week_start": "2026-09-14",
+          "utilized_units": 5917
+        },
+        {
+          "week_start": "2026-09-21",
+          "utilized_units": 5912
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "series": [
+        {
+          "week_start": "2025-09-29",
+          "utilized_units": 2384
+        },
+        {
+          "week_start": "2025-10-06",
+          "utilized_units": 2395
+        },
+        {
+          "week_start": "2025-10-13",
+          "utilized_units": 2366
+        },
+        {
+          "week_start": "2025-10-20",
+          "utilized_units": 2404
+        },
+        {
+          "week_start": "2025-10-27",
+          "utilized_units": 2387
+        },
+        {
+          "week_start": "2025-11-03",
+          "utilized_units": 2453
+        },
+        {
+          "week_start": "2025-11-10",
+          "utilized_units": 2326
+        },
+        {
+          "week_start": "2025-11-17",
+          "utilized_units": 2439
+        },
+        {
+          "week_start": "2025-11-24",
+          "utilized_units": 2370
+        },
+        {
+          "week_start": "2025-12-01",
+          "utilized_units": 2384
+        },
+        {
+          "week_start": "2025-12-08",
+          "utilized_units": 2394
+        },
+        {
+          "week_start": "2025-12-15",
+          "utilized_units": 2382
+        },
+        {
+          "week_start": "2025-12-22",
+          "utilized_units": 2437
+        },
+        {
+          "week_start": "2025-12-29",
+          "utilized_units": 2487
+        },
+        {
+          "week_start": "2026-01-05",
+          "utilized_units": 2466
+        },
+        {
+          "week_start": "2026-01-12",
+          "utilized_units": 2382
+        },
+        {
+          "week_start": "2026-01-19",
+          "utilized_units": 2429
+        },
+        {
+          "week_start": "2026-01-26",
+          "utilized_units": 2461
+        },
+        {
+          "week_start": "2026-02-02",
+          "utilized_units": 2484
+        },
+        {
+          "week_start": "2026-02-09",
+          "utilized_units": 2424
+        },
+        {
+          "week_start": "2026-02-16",
+          "utilized_units": 2428
+        },
+        {
+          "week_start": "2026-02-23",
+          "utilized_units": 2466
+        },
+        {
+          "week_start": "2026-03-02",
+          "utilized_units": 2448
+        },
+        {
+          "week_start": "2026-03-09",
+          "utilized_units": 2472
+        },
+        {
+          "week_start": "2026-03-16",
+          "utilized_units": 2482
+        },
+        {
+          "week_start": "2026-03-23",
+          "utilized_units": 2452
+        },
+        {
+          "week_start": "2026-03-30",
+          "utilized_units": 2420
+        },
+        {
+          "week_start": "2026-04-06",
+          "utilized_units": 2427
+        },
+        {
+          "week_start": "2026-04-13",
+          "utilized_units": 2468
+        },
+        {
+          "week_start": "2026-04-20",
+          "utilized_units": 2469
+        },
+        {
+          "week_start": "2026-04-27",
+          "utilized_units": 2447
+        },
+        {
+          "week_start": "2026-05-04",
+          "utilized_units": 2476
+        },
+        {
+          "week_start": "2026-05-11",
+          "utilized_units": 2501
+        },
+        {
+          "week_start": "2026-05-18",
+          "utilized_units": 2569
+        },
+        {
+          "week_start": "2026-05-25",
+          "utilized_units": 2564
+        },
+        {
+          "week_start": "2026-06-01",
+          "utilized_units": 2511
+        },
+        {
+          "week_start": "2026-06-08",
+          "utilized_units": 2519
+        },
+        {
+          "week_start": "2026-06-15",
+          "utilized_units": 2521
+        },
+        {
+          "week_start": "2026-06-22",
+          "utilized_units": 2575
+        },
+        {
+          "week_start": "2026-06-29",
+          "utilized_units": 2603
+        },
+        {
+          "week_start": "2026-07-06",
+          "utilized_units": 2642
+        },
+        {
+          "week_start": "2026-07-13",
+          "utilized_units": 2546
+        },
+        {
+          "week_start": "2026-07-20",
+          "utilized_units": 2619
+        },
+        {
+          "week_start": "2026-07-27",
+          "utilized_units": 2685
+        },
+        {
+          "week_start": "2026-08-03",
+          "utilized_units": 2684
+        },
+        {
+          "week_start": "2026-08-10",
+          "utilized_units": 2701
+        },
+        {
+          "week_start": "2026-08-17",
+          "utilized_units": 2693
+        },
+        {
+          "week_start": "2026-08-24",
+          "utilized_units": 2753
+        },
+        {
+          "week_start": "2026-08-31",
+          "utilized_units": 2698
+        },
+        {
+          "week_start": "2026-09-07",
+          "utilized_units": 2723
+        },
+        {
+          "week_start": "2026-09-14",
+          "utilized_units": 2703
+        },
+        {
+          "week_start": "2026-09-21",
+          "utilized_units": 2778
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "series": [
+        {
+          "week_start": "2025-09-29",
+          "utilized_units": 3467
+        },
+        {
+          "week_start": "2025-10-06",
+          "utilized_units": 3488
+        },
+        {
+          "week_start": "2025-10-13",
+          "utilized_units": 3564
+        },
+        {
+          "week_start": "2025-10-20",
+          "utilized_units": 3493
+        },
+        {
+          "week_start": "2025-10-27",
+          "utilized_units": 3624
+        },
+        {
+          "week_start": "2025-11-03",
+          "utilized_units": 3545
+        },
+        {
+          "week_start": "2025-11-10",
+          "utilized_units": 3534
+        },
+        {
+          "week_start": "2025-11-17",
+          "utilized_units": 3632
+        },
+        {
+          "week_start": "2025-11-24",
+          "utilized_units": 3659
+        },
+        {
+          "week_start": "2025-12-01",
+          "utilized_units": 3548
+        },
+        {
+          "week_start": "2025-12-08",
+          "utilized_units": 3664
+        },
+        {
+          "week_start": "2025-12-15",
+          "utilized_units": 3647
+        },
+        {
+          "week_start": "2025-12-22",
+          "utilized_units": 3632
+        },
+        {
+          "week_start": "2025-12-29",
+          "utilized_units": 3649
+        },
+        {
+          "week_start": "2026-01-05",
+          "utilized_units": 3701
+        },
+        {
+          "week_start": "2026-01-12",
+          "utilized_units": 3673
+        },
+        {
+          "week_start": "2026-01-19",
+          "utilized_units": 3645
+        },
+        {
+          "week_start": "2026-01-26",
+          "utilized_units": 3704
+        },
+        {
+          "week_start": "2026-02-02",
+          "utilized_units": 3714
+        },
+        {
+          "week_start": "2026-02-09",
+          "utilized_units": 3596
+        },
+        {
+          "week_start": "2026-02-16",
+          "utilized_units": 3757
+        },
+        {
+          "week_start": "2026-02-23",
+          "utilized_units": 3718
+        },
+        {
+          "week_start": "2026-03-02",
+          "utilized_units": 3723
+        },
+        {
+          "week_start": "2026-03-09",
+          "utilized_units": 3827
+        },
+        {
+          "week_start": "2026-03-16",
+          "utilized_units": 3788
+        },
+        {
+          "week_start": "2026-03-23",
+          "utilized_units": 3779
+        },
+        {
+          "week_start": "2026-03-30",
+          "utilized_units": 3849
+        },
+        {
+          "week_start": "2026-04-06",
+          "utilized_units": 3805
+        },
+        {
+          "week_start": "2026-04-13",
+          "utilized_units": 3853
+        },
+        {
+          "week_start": "2026-04-20",
+          "utilized_units": 3706
+        },
+        {
+          "week_start": "2026-04-27",
+          "utilized_units": 3918
+        },
+        {
+          "week_start": "2026-05-04",
+          "utilized_units": 3876
+        },
+        {
+          "week_start": "2026-05-11",
+          "utilized_units": 3834
+        },
+        {
+          "week_start": "2026-05-18",
+          "utilized_units": 3819
+        },
+        {
+          "week_start": "2026-05-25",
+          "utilized_units": 3911
+        },
+        {
+          "week_start": "2026-06-01",
+          "utilized_units": 3899
+        },
+        {
+          "week_start": "2026-06-08",
+          "utilized_units": 3924
+        },
+        {
+          "week_start": "2026-06-15",
+          "utilized_units": 3946
+        },
+        {
+          "week_start": "2026-06-22",
+          "utilized_units": 3982
+        },
+        {
+          "week_start": "2026-06-29",
+          "utilized_units": 3952
+        },
+        {
+          "week_start": "2026-07-06",
+          "utilized_units": 4020
+        },
+        {
+          "week_start": "2026-07-13",
+          "utilized_units": 4102
+        },
+        {
+          "week_start": "2026-07-20",
+          "utilized_units": 4187
+        },
+        {
+          "week_start": "2026-07-27",
+          "utilized_units": 4036
+        },
+        {
+          "week_start": "2026-08-03",
+          "utilized_units": 4190
+        },
+        {
+          "week_start": "2026-08-10",
+          "utilized_units": 4255
+        },
+        {
+          "week_start": "2026-08-17",
+          "utilized_units": 4212
+        },
+        {
+          "week_start": "2026-08-24",
+          "utilized_units": 4217
+        },
+        {
+          "week_start": "2026-08-31",
+          "utilized_units": 4267
+        },
+        {
+          "week_start": "2026-09-07",
+          "utilized_units": 4347
+        },
+        {
+          "week_start": "2026-09-14",
+          "utilized_units": 4230
+        },
+        {
+          "week_start": "2026-09-21",
+          "utilized_units": 4267
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-japaneast-01-gpu-l40s",
+      "series": [
+        {
+          "week_start": "2025-09-29",
+          "utilized_units": 1336
+        },
+        {
+          "week_start": "2025-10-06",
+          "utilized_units": 1385
+        },
+        {
+          "week_start": "2025-10-13",
+          "utilized_units": 1386
+        },
+        {
+          "week_start": "2025-10-20",
+          "utilized_units": 1437
+        },
+        {
+          "week_start": "2025-10-27",
+          "utilized_units": 1427
+        },
+        {
+          "week_start": "2025-11-03",
+          "utilized_units": 1429
+        },
+        {
+          "week_start": "2025-11-10",
+          "utilized_units": 1440
+        },
+        {
+          "week_start": "2025-11-17",
+          "utilized_units": 1492
+        },
+        {
+          "week_start": "2025-11-24",
+          "utilized_units": 1503
+        },
+        {
+          "week_start": "2025-12-01",
+          "utilized_units": 1513
+        },
+        {
+          "week_start": "2025-12-08",
+          "utilized_units": 1505
+        },
+        {
+          "week_start": "2025-12-15",
+          "utilized_units": 1434
+        },
+        {
+          "week_start": "2025-12-22",
+          "utilized_units": 1538
+        },
+        {
+          "week_start": "2025-12-29",
+          "utilized_units": 1475
+        },
+        {
+          "week_start": "2026-01-05",
+          "utilized_units": 1555
+        },
+        {
+          "week_start": "2026-01-12",
+          "utilized_units": 1511
+        },
+        {
+          "week_start": "2026-01-19",
+          "utilized_units": 1636
+        },
+        {
+          "week_start": "2026-01-26",
+          "utilized_units": 1576
+        },
+        {
+          "week_start": "2026-02-02",
+          "utilized_units": 1603
+        },
+        {
+          "week_start": "2026-02-09",
+          "utilized_units": 1587
+        },
+        {
+          "week_start": "2026-02-16",
+          "utilized_units": 1657
+        },
+        {
+          "week_start": "2026-02-23",
+          "utilized_units": 1632
+        },
+        {
+          "week_start": "2026-03-02",
+          "utilized_units": 1587
+        },
+        {
+          "week_start": "2026-03-09",
+          "utilized_units": 1636
+        },
+        {
+          "week_start": "2026-03-16",
+          "utilized_units": 1598
+        },
+        {
+          "week_start": "2026-03-23",
+          "utilized_units": 1597
+        },
+        {
+          "week_start": "2026-03-30",
+          "utilized_units": 1691
+        },
+        {
+          "week_start": "2026-04-06",
+          "utilized_units": 1656
+        },
+        {
+          "week_start": "2026-04-13",
+          "utilized_units": 1622
+        },
+        {
+          "week_start": "2026-04-20",
+          "utilized_units": 1680
+        },
+        {
+          "week_start": "2026-04-27",
+          "utilized_units": 1659
+        },
+        {
+          "week_start": "2026-05-04",
+          "utilized_units": 1728
+        },
+        {
+          "week_start": "2026-05-11",
+          "utilized_units": 1733
+        },
+        {
+          "week_start": "2026-05-18",
+          "utilized_units": 1728
+        },
+        {
+          "week_start": "2026-05-25",
+          "utilized_units": 1767
+        },
+        {
+          "week_start": "2026-06-01",
+          "utilized_units": 1800
+        },
+        {
+          "week_start": "2026-06-08",
+          "utilized_units": 1887
+        },
+        {
+          "week_start": "2026-06-15",
+          "utilized_units": 1768
+        },
+        {
+          "week_start": "2026-06-22",
+          "utilized_units": 1851
+        },
+        {
+          "week_start": "2026-06-29",
+          "utilized_units": 1897
+        },
+        {
+          "week_start": "2026-07-06",
+          "utilized_units": 1946
+        },
+        {
+          "week_start": "2026-07-13",
+          "utilized_units": 2026
+        },
+        {
+          "week_start": "2026-07-20",
+          "utilized_units": 1935
+        },
+        {
+          "week_start": "2026-07-27",
+          "utilized_units": 1943
+        },
+        {
+          "week_start": "2026-08-03",
+          "utilized_units": 2021
+        },
+        {
+          "week_start": "2026-08-10",
+          "utilized_units": 1988
+        },
+        {
+          "week_start": "2026-08-17",
+          "utilized_units": 2106
+        },
+        {
+          "week_start": "2026-08-24",
+          "utilized_units": 2095
+        },
+        {
+          "week_start": "2026-08-31",
+          "utilized_units": 2049
+        },
+        {
+          "week_start": "2026-09-07",
+          "utilized_units": 2060
+        },
+        {
+          "week_start": "2026-09-14",
+          "utilized_units": 2134
+        },
+        {
+          "week_start": "2026-09-21",
+          "utilized_units": 2115
+        }
+      ]
+    },
+    {
+      "pool_id": "pool-brazilsouth-01-amd-genoa",
+      "series": [
+        {
+          "week_start": "2025-09-29",
+          "utilized_units": 1564
+        },
+        {
+          "week_start": "2025-10-06",
+          "utilized_units": 1621
+        },
+        {
+          "week_start": "2025-10-13",
+          "utilized_units": 1566
+        },
+        {
+          "week_start": "2025-10-20",
+          "utilized_units": 1626
+        },
+        {
+          "week_start": "2025-10-27",
+          "utilized_units": 1687
+        },
+        {
+          "week_start": "2025-11-03",
+          "utilized_units": 1664
+        },
+        {
+          "week_start": "2025-11-10",
+          "utilized_units": 1584
+        },
+        {
+          "week_start": "2025-11-17",
+          "utilized_units": 1610
+        },
+        {
+          "week_start": "2025-11-24",
+          "utilized_units": 1639
+        },
+        {
+          "week_start": "2025-12-01",
+          "utilized_units": 1649
+        },
+        {
+          "week_start": "2025-12-08",
+          "utilized_units": 1603
+        },
+        {
+          "week_start": "2025-12-15",
+          "utilized_units": 1676
+        },
+        {
+          "week_start": "2025-12-22",
+          "utilized_units": 1637
+        },
+        {
+          "week_start": "2025-12-29",
+          "utilized_units": 1709
+        },
+        {
+          "week_start": "2026-01-05",
+          "utilized_units": 1674
+        },
+        {
+          "week_start": "2026-01-12",
+          "utilized_units": 1631
+        },
+        {
+          "week_start": "2026-01-19",
+          "utilized_units": 1661
+        },
+        {
+          "week_start": "2026-01-26",
+          "utilized_units": 1675
+        },
+        {
+          "week_start": "2026-02-02",
+          "utilized_units": 1680
+        },
+        {
+          "week_start": "2026-02-09",
+          "utilized_units": 1659
+        },
+        {
+          "week_start": "2026-02-16",
+          "utilized_units": 1657
+        },
+        {
+          "week_start": "2026-02-23",
+          "utilized_units": 1694
+        },
+        {
+          "week_start": "2026-03-02",
+          "utilized_units": 1669
+        },
+        {
+          "week_start": "2026-03-09",
+          "utilized_units": 1680
+        },
+        {
+          "week_start": "2026-03-16",
+          "utilized_units": 1739
+        },
+        {
+          "week_start": "2026-03-23",
+          "utilized_units": 1679
+        },
+        {
+          "week_start": "2026-03-30",
+          "utilized_units": 1697
+        },
+        {
+          "week_start": "2026-04-06",
+          "utilized_units": 1685
+        },
+        {
+          "week_start": "2026-04-13",
+          "utilized_units": 1687
+        },
+        {
+          "week_start": "2026-04-20",
+          "utilized_units": 1683
+        },
+        {
+          "week_start": "2026-04-27",
+          "utilized_units": 1692
+        },
+        {
+          "week_start": "2026-05-04",
+          "utilized_units": 1770
+        },
+        {
+          "week_start": "2026-05-11",
+          "utilized_units": 1781
+        },
+        {
+          "week_start": "2026-05-18",
+          "utilized_units": 1697
+        },
+        {
+          "week_start": "2026-05-25",
+          "utilized_units": 1762
+        },
+        {
+          "week_start": "2026-06-01",
+          "utilized_units": 1805
+        },
+        {
+          "week_start": "2026-06-08",
+          "utilized_units": 1788
+        },
+        {
+          "week_start": "2026-06-15",
+          "utilized_units": 1761
+        },
+        {
+          "week_start": "2026-06-22",
+          "utilized_units": 1881
+        },
+        {
+          "week_start": "2026-06-29",
+          "utilized_units": 1807
+        },
+        {
+          "week_start": "2026-07-06",
+          "utilized_units": 1862
+        },
+        {
+          "week_start": "2026-07-13",
+          "utilized_units": 1814
+        },
+        {
+          "week_start": "2026-07-20",
+          "utilized_units": 1856
+        },
+        {
+          "week_start": "2026-07-27",
+          "utilized_units": 1942
+        },
+        {
+          "week_start": "2026-08-03",
+          "utilized_units": 1866
+        },
+        {
+          "week_start": "2026-08-10",
+          "utilized_units": 1862
+        },
+        {
+          "week_start": "2026-08-17",
+          "utilized_units": 1873
+        },
+        {
+          "week_start": "2026-08-24",
+          "utilized_units": 1875
+        },
+        {
+          "week_start": "2026-08-31",
+          "utilized_units": 1913
+        },
+        {
+          "week_start": "2026-09-07",
+          "utilized_units": 1892
+        },
+        {
+          "week_start": "2026-09-14",
+          "utilized_units": 1954
+        },
+        {
+          "week_start": "2026-09-21",
+          "utilized_units": 1915
+        }
+      ]
+    }
+  ]
+}

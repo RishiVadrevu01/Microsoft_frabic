@@ -1,0 +1,33 @@
+{
+  "source": "synthetic",
+  "dataset_version": "2026.09.0",
+  "records": [
+    {
+      "order_id": "ORD-2026-0412",
+      "pool_id": "pool-eastus-01-intel-icx",
+      "sku_id": "FAB-INTEL-ICX-64",
+      "cu": 1152,
+      "placed_on": "2026-06-01",
+      "lands_on": "2026-11-09",
+      "status": "in-transit"
+    },
+    {
+      "order_id": "ORD-2026-0431",
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "sku_id": "FAB-GPU-H100-8",
+      "cu": 480,
+      "placed_on": "2026-06-29",
+      "lands_on": "2026-12-14",
+      "status": "ordered"
+    },
+    {
+      "order_id": "ORD-2026-0440",
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "sku_id": "FAB-AMD-GENOA-96",
+      "cu": 384,
+      "placed_on": "2026-07-13",
+      "lands_on": "2026-10-26",
+      "status": "in-transit"
+    }
+  ]
+}

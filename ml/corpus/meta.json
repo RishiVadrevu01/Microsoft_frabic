@@ -1,0 +1,112 @@
+{
+  "source": "synthetic",
+  "generator_version": "2026.09.1",
+  "notice": "Every value is generated. It ties to the lab's weekly readings and records, and is not measured data from any real estate.",
+  "as_of": "2026-09-21",
+  "frequency": "1 hour",
+  "starts_utc": "2024-09-23T00:00:00Z",
+  "ends_before_utc": "2026-09-21T00:00:00Z",
+  "hours_per_pool": 17472,
+  "weeks": {
+    "total": 104,
+    "from_the_lab": 52,
+    "backcast": 52
+  },
+  "rows": 104832,
+  "pools": [
+    "pool-eastus-01-intel-icx",
+    "pool-westeurope-01-amd-genoa",
+    "pool-westeurope-02-gpu-h100",
+    "pool-southeastasia-01-amd-genoa",
+    "pool-japaneast-01-gpu-l40s",
+    "pool-brazilsouth-01-amd-genoa"
+  ],
+  "definitions": {
+    "utilized_units": "Capacity units in use during the hour. The 168 hours ending at a week_start add up to 168 x that week's reading in utilization.json, exactly.",
+    "p95_latency_ms": "The hour's p95 latency. The last week averages to performance.json p95_latency_ms.",
+    "queue_depth_p95": "The hour's p95 queue depth. The last week averages to performance.json queue_depth_p95.",
+    "incidents_opened": "Incidents opened in the hour. The last window_days come from incidents.json, placed at a fixed hour of their day; earlier hours carry a quiet background rate.",
+    "incident_weight_active": "Severity weight (policy.reliability.weights) of incidents still open in the hour, each open for its recorded time to mitigate.",
+    "carbon_kg": "kg CO2e in the hour: the SKU's gCO2 per CU-hour x utilized_units / 1000.",
+    "local_hour": "Hour of day, 0-23, on the region's local clock, including daylight saving.",
+    "local_dow": "Day of week on the local clock, 0 = Monday.",
+    "is_holiday": "1 on an illustrative local public holiday."
+  },
+  "assumptions": [
+    "Weekly readings are read as the mean of the 168 hours ending at week_start, so the corpus ends at the dataset's as_of.",
+    "The 52 weeks before the lab's history are a backcast: a fitted two-part trend and yearly wave with fresh noise.",
+    "Installed capacity is constant through the history; orders in flight land after the last hour.",
+    "The calendar is illustrative: standard daylight-saving rules and a short list of public holidays per region.",
+    "Latency, queue depth and carbon are generated from utilization, so they carry no information a model could not already get from it."
+  ],
+  "per_pool": [
+    {
+      "pool_id": "pool-eastus-01-intel-icx",
+      "capacity_units": 9600,
+      "last_week_mean": 7388,
+      "peak_to_mean_max": 1.175,
+      "peak_to_mean_p95": 1.134,
+      "max_share_of_capacity": 0.948,
+      "min_share_of_capacity": 0.196
+    },
+    {
+      "pool_id": "pool-westeurope-01-amd-genoa",
+      "capacity_units": 12288,
+      "last_week_mean": 5912,
+      "peak_to_mean_max": 1.184,
+      "peak_to_mean_p95": 1.14,
+      "max_share_of_capacity": 0.572,
+      "min_share_of_capacity": 0.31
+    },
+    {
+      "pool_id": "pool-westeurope-02-gpu-h100",
+      "capacity_units": 4608,
+      "last_week_mean": 2778,
+      "peak_to_mean_max": 1.056,
+      "peak_to_mean_p95": 1.041,
+      "max_share_of_capacity": 0.638,
+      "min_share_of_capacity": 0.447
+    },
+    {
+      "pool_id": "pool-southeastasia-01-amd-genoa",
+      "capacity_units": 7680,
+      "last_week_mean": 4267,
+      "peak_to_mean_max": 1.178,
+      "peak_to_mean_p95": 1.138,
+      "max_share_of_capacity": 0.672,
+      "min_share_of_capacity": 0.323
+    },
+    {
+      "pool_id": "pool-japaneast-01-gpu-l40s",
+      "capacity_units": 3840,
+      "last_week_mean": 2115,
+      "peak_to_mean_max": 1.167,
+      "peak_to_mean_p95": 1.121,
+      "max_share_of_capacity": 0.665,
+      "min_share_of_capacity": 0.195
+    },
+    {
+      "pool_id": "pool-brazilsouth-01-amd-genoa",
+      "capacity_units": 3072,
+      "last_week_mean": 1915,
+      "peak_to_mean_max": 1.179,
+      "peak_to_mean_p95": 1.136,
+      "max_share_of_capacity": 0.754,
+      "min_share_of_capacity": 0.338
+    }
+  ],
+  "files": {
+    "hourly_pool_metrics.csv": {
+      "rows": 104832,
+      "sha256": "aafa03b9dad7443a6afef6d2fc9b59d3398561fb1043013357c940a983e208c8"
+    },
+    "pools.csv": {
+      "rows": 6,
+      "sha256": "abaee59f6d87b1f0037b239b2a7de2dabb9170067758cbe12994a102f1da97d8"
+    },
+    "calendar_future.csv": {
+      "rows": 1152,
+      "sha256": "a718429dc1683d7f4c2a43ab179526bc28d4653afdf26a3628b6118be81570db"
+    }
+  }
+}
